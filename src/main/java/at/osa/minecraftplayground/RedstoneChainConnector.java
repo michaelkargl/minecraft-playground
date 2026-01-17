@@ -25,6 +25,7 @@ import java.util.List;
 public class RedstoneChainConnector extends Item {
 
     private static final int MAX_CONNECTION_DISTANCE = 20;
+    private static final int MAX_CONNECTIONS_PER_CHAIN = 5;
 
     public RedstoneChainConnector(Properties properties) {
         super(properties);
@@ -80,7 +81,7 @@ public class RedstoneChainConnector extends Item {
     private InteractionResult handleShiftClick(Level level, Player player, BlockPos clickedPos, RedstoneChainEntity chain, ItemStack stack) {
         CompoundTag tag = stack.getOrDefault(MinecraftPlayground.LINK_DATA, new CompoundTag());
 
-        if (!level.isClientSide && chain.getConnections().size() >= 3) {
+        if (!level.isClientSide && chain.getConnections().size() >= MAX_CONNECTIONS_PER_CHAIN) {
             player.displayClientMessage(
                     Component.translatable("item.minecraftplayground.chain_connector.max_connections")
                             .withStyle(ChatFormatting.RED),
@@ -140,7 +141,7 @@ public class RedstoneChainConnector extends Item {
             }
         } else {
             // Check if this chain already has max connections
-            if (chain.getConnections().size() >= 3) {
+            if (chain.getConnections().size() >= MAX_CONNECTIONS_PER_CHAIN) {
                 if (!level.isClientSide) {
                     player.displayClientMessage(
                             Component.translatable("item.minecraftplayground.chain_connector.max_connections")

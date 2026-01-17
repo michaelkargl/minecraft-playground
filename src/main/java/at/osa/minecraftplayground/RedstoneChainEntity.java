@@ -60,6 +60,8 @@ public class RedstoneChainEntity extends BlockEntity {
     // Cached value of the last input signal received
     private int cachedInputSignal = 0;
 
+    private static final int MAX_CONNECTIONS = 3;
+
     /**
      * Constructor for the RedstoneChainEntity.
      * <p>
@@ -115,7 +117,7 @@ public class RedstoneChainEntity extends BlockEntity {
         if (connections.contains(target)) {
             return;
         }
-        if (connections.size() >= 3) {
+        if (connections.size() >= MAX_CONNECTIONS) {
             return;
         }
 
