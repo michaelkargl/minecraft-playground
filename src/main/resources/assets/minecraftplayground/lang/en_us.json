@@ -1,0 +1,14 @@
+{
+  "itemGroup.minecraftplayground": "Example Mod Tab",
+  "block.minecraftplayground.example_block": "Example Block",
+  "block.minecraftplayground.redstone_detector": "Redstone Detector",
+  "item.minecraftplayground.example_item": "Example Item",
+
+  "minecraftplayground.configuration.title": "MinecraftPlayground Configs",
+  "minecraftplayground.configuration.section.minecraftplayground.common.toml": "MinecraftPlayground Configs",
+  "minecraftplayground.configuration.section.minecraftplayground.common.toml.title": "MinecraftPlayground Configs",
+  "minecraftplayground.configuration.items": "Item List",
+  "minecraftplayground.configuration.logDirtBlock": "Log Dirt Block",
+  "minecraftplayground.configuration.magicNumberIntroduction": "Magic Number Text",
+  "minecraftplayground.configuration.magicNumber": "Magic Number"
+}
