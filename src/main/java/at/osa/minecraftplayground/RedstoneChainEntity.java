@@ -50,26 +50,6 @@ public class RedstoneChainEntity extends BlockEntity {
      */
     private boolean networkDirty = true;
 
-    // ===== Configuration Constants =====
-    /**
-     * Maximum distance (in blocks) between two connected chain blocks.
-     * Connections beyond this distance are rejected.
-     */
-    private static final int MAX_CONNECTION_DISTANCE = 24;
-
-    /**
-     * Maximum number of cable connections per chain block.
-     * Prevents visual clutter and performance issues.
-     */
-    private static final int MAX_CONNECTIONS = 3;
-
-    // ===== Update Scheduling =====
-    /**
-     * How often (in ticks) to perform periodic network updates.
-     * 20 ticks = 1 second. This acts as a backup to event-driven updates.
-     */
-    private static final int UPDATE_INTERVAL = 20;
-
     /**
      * Counts ticks since the last periodic update.
      * Reset to 0 when UPDATE_INTERVAL is reached.
@@ -89,12 +69,6 @@ public class RedstoneChainEntity extends BlockEntity {
      * Used to delay signal loss and prevent flickering.
      */
     private int ticksWithoutInput = 0;
-
-    /**
-     * How many ticks to wait before clearing cached signal after input is lost.
-     * Prevents flickering when power briefly turns off.
-     */
-    private static final int SIGNAL_LOSS_DELAY = 1;
 
     /**
      * The last known input signal strength from external sources.
@@ -200,11 +174,11 @@ public class RedstoneChainEntity extends BlockEntity {
     }
 
     private boolean isAtMaxConnections() {
-        return connections.size() >= MAX_CONNECTIONS;
+        return connections.size() >= Config.MAX_CONNECTIONS_PER_CHAIN.getAsInt();
     }
 
     private boolean isTooFarAway(BlockPos target) {
-        double maxDistSq = MAX_CONNECTION_DISTANCE * MAX_CONNECTION_DISTANCE;
+        double maxDistSq = Config.MAX_CONNECTION_DISTANCE.getAsInt() * Config.MAX_CONNECTION_DISTANCE.getAsInt();
         return worldPosition.distSqr(target) > maxDistSq;
     }
 
@@ -238,7 +212,7 @@ public class RedstoneChainEntity extends BlockEntity {
      * 3. Changes are saved to disk
      * 4. The client is synced so the cable disappears
      * 5. Both this block's network and the target's network are invalidated
-     *    - This forces both networks to rebuild, as they may have been split
+     * - This forces both networks to rebuild, as they may have been split
      * <p>
      * Note: This only removes the connection from THIS block to the target.
      * If there was a bidirectional connection, the target block also needs to
@@ -278,12 +252,12 @@ public class RedstoneChainEntity extends BlockEntity {
      * 2. Create a "visited" set to track which blocks we've already processed
      * 3. Use a queue for breadth-first traversal
      * 4. For each block in the queue:
-     *    a. Skip if already visited
-     *    b. Mark it as visited
-     *    c. If it's a RedstoneChainEntity:
-     *       - Set its networkDirty flag to true
-     *       - Save the change
-     *       - Add all its connections to the queue for processing
+     * a. Skip if already visited
+     * b. Mark it as visited
+     * c. If it's a RedstoneChainEntity:
+     * - Set its networkDirty flag to true
+     * - Save the change
+     * - Add all its connections to the queue for processing
      * 5. Continue until all reachable blocks are processed
      * <p>
      * This ensures that when you break a connection, both resulting networks
@@ -328,8 +302,8 @@ public class RedstoneChainEntity extends BlockEntity {
      * 5. Sync to client (cables disappear)
      * 6. Invalidate this block's network
      * 7. For each previously connected block:
-     *    - Invalidate its network too
-     *    - This ensures all affected networks rebuild properly
+     * - Invalidate its network too
+     * - This ensures all affected networks rebuild properly
      * <p>
      * This is important for cleanup because when a block is removed, all blocks
      * that were connected to it need to recalculate their networks.
@@ -395,12 +369,12 @@ public class RedstoneChainEntity extends BlockEntity {
      * 1. Create a 'visited' set to track blocks we've already processed
      * 2. Create a queue and add this block's position as the starting point
      * 3. While the queue has positions to process:
-     *    a. Take a position from the front of the queue
-     *    b. If we've already visited this position, skip it
-     *    c. Mark this position as visited
-     *    d. If there's a RedstoneChainEntity at this position:
-     *       - Get all its valid chain connections
-     *       - Add any unvisited connections to the queue
+     * a. Take a position from the front of the queue
+     * b. If we've already visited this position, skip it
+     * c. Mark this position as visited
+     * d. If there's a RedstoneChainEntity at this position:
+     * - Get all its valid chain connections
+     * - Add any unvisited connections to the queue
      * 4. Once the queue is empty, we've found all reachable blocks
      * 5. Clear the current network set and add all visited positions
      * <p>
@@ -545,12 +519,12 @@ public class RedstoneChainEntity extends BlockEntity {
      * <p>
      * How it works:
      * 1. For each position in the network:
-     *    a. Get the current block state at that position
-     *    b. Verify it's actually a RedstoneChainBlock (safety check)
-     *    c. Get the current POWER value from the block state
-     *    d. If the current power is different from the target signal:
-     *       - Create a new block state with the updated POWER value
-     *       - Set the block in the world (flag 3 = update neighbors & send to client)
+     * a. Get the current block state at that position
+     * b. Verify it's actually a RedstoneChainBlock (safety check)
+     * c. Get the current POWER value from the block state
+     * d. If the current power is different from the target signal:
+     * - Create a new block state with the updated POWER value
+     * - Set the block in the world (flag 3 = update neighbors & send to client)
      * 2. Only update blocks that actually need changing (performance optimization)
      * <p>
      * The flag value of 3 means:
@@ -681,7 +655,7 @@ public class RedstoneChainEntity extends BlockEntity {
             ticksWithoutInput++;
 
             // Only clear signal after delay period has passed
-            if (ticksWithoutInput >= SIGNAL_LOSS_DELAY) {
+            if (ticksWithoutInput >= Config.SIGNAL_LOSS_DELAY_TICKS.getAsInt()) {
                 cachedInputSignal = 0;
             }
             // Otherwise keep the cached signal (prevents flickering)
@@ -701,10 +675,10 @@ public class RedstoneChainEntity extends BlockEntity {
      * 3. Start with the larger network as the base (optimization)
      * 4. Add all blocks from the smaller network to it
      * 5. For every block in the merged set:
-     *    a. Get its block entity
-     *    b. If it's a RedstoneChainEntity:
-     *       - Replace its network set with the merged set
-     *       - Mark it as NOT dirty (network is now up-to-date)
+     * a. Get its block entity
+     * b. If it's a RedstoneChainEntity:
+     * - Replace its network set with the merged set
+     * - Mark it as NOT dirty (network is now up-to-date)
      * <p>
      * Why merge instead of rebuild?
      * - More efficient: O(n+m) instead of potentially O((n+m)²) for BFS rebuild
@@ -740,38 +714,38 @@ public class RedstoneChainEntity extends BlockEntity {
 
     /**
      * Called every game tick (20 times per second) for this block entity.
-     *
+     * <p>
      * This is the ticker method that Minecraft calls automatically for block entities
      * that have registered a ticker (see RedstoneChainBlock.getTicker).
-     *
+     * <p>
      * What happens every tick:
      * 1. First, validate this is actually a RedstoneChainEntity (type safety)
      * 2. If on client side, return immediately (all logic is server-side only)
      * 3. Increment the tick counter (ticksSinceLastUpdate)
      * 4. When the counter reaches UPDATE_INTERVAL (20 ticks = 1 second):
-     *    - Reset the counter to 0
-     *    - Call updateSignalInNetwork() to recalculate and distribute power
-     *
+     * - Reset the counter to 0
+     * - Call updateSignalInNetwork() to recalculate and distribute power
+     * <p>
      * Why periodic updates instead of event-driven only?
      * - Catches edge cases where neighbor updates might be missed
      * - Ensures networks stay synchronized even if some updates are lost
      * - Provides a "heartbeat" for the network that can detect and fix issues
      * - Once per second is frequent enough for responsiveness but light on performance
-     *
+     * <p>
      * This combines with event-driven updates (neighborChanged) to create a robust
      * system that responds quickly to changes but also self-corrects periodically.
      *
      * @param level The world/level containing this block entity
-     * @param pos The position of this block entity
+     * @param pos   The position of this block entity
      * @param state The block state of this block entity
-     * @param be The block entity itself (type-checked to RedstoneChainEntity)
+     * @param be    The block entity itself (type-checked to RedstoneChainEntity)
      */
     public static <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, T be) {
         if (!(be instanceof RedstoneChainEntity chain)) return;
         if (level.isClientSide) return;
 
         chain.ticksSinceLastUpdate++;
-        if (chain.ticksSinceLastUpdate >= UPDATE_INTERVAL) {
+        if (chain.ticksSinceLastUpdate >= Config.UPDATE_INTERVAL_TICKS.getAsInt()) {
             chain.ticksSinceLastUpdate = 0;
             chain.updateSignalInNetwork();
         }
@@ -779,11 +753,11 @@ public class RedstoneChainEntity extends BlockEntity {
 
     /**
      * Returns the current redstone signal strength of this chain block.
-     *
+     * <p>
      * This is a simple helper method that reads the POWER value from the block state.
      * It's used by RedstoneChainBlock.getSignal() to provide the signal strength
      * to neighboring blocks.
-     *
+     * <p>
      * The value returned is between 0-15:
      * - 0 means no power (unpowered)
      * - 15 means maximum power (fully powered)
@@ -797,28 +771,28 @@ public class RedstoneChainEntity extends BlockEntity {
 
     /**
      * Synchronizes this block entity's data to connected clients.
-     *
+     * <p>
      * In Minecraft, the server and client maintain separate worlds. When data changes
      * on the server (like connection lists), the client needs to be notified so it can
      * update its rendering.
-     *
+     * <p>
      * This method:
      * 1. Checks if we're on the server (!level.isClientSide)
-     *    - Client-side calls are ignored (no need to sync from client to server)
+     * - Client-side calls are ignored (no need to sync from client to server)
      * 2. Calls level.sendBlockUpdated() which:
-     *    - Sends a packet to all clients watching this chunk
-     *    - The packet contains the updated block entity data
-     *    - Clients receive the packet and update their local copy
-     *
+     * - Sends a packet to all clients watching this chunk
+     * - The packet contains the updated block entity data
+     * - Clients receive the packet and update their local copy
+     * <p>
      * The flag value of 3 means:
      * - Bit 0 (1): Send the update to clients
      * - Bit 1 (2): Cause a block update (re-render)
-     *
+     * <p>
      * This is crucial for:
      * - Rendering cables when connections change
      * - Updating visual power levels
      * - Keeping client and server in sync
-     *
+     * <p>
      * Without this, players wouldn't see cables appear/disappear or power changes.
      */
     private void syncToClient() {
@@ -832,30 +806,30 @@ public class RedstoneChainEntity extends BlockEntity {
 
     /**
      * Saves this block entity's data to disk (NBT format).
-     *
+     * <p>
      * NBT (Named Binary Tag) is Minecraft's data storage format, similar to JSON but binary.
      * This method is called when:
      * - The chunk is saved to disk
      * - The world is closing
      * - The game is auto-saving
-     *
+     * <p>
      * What gets saved:
      * 1. First, call the parent class to save standard data (position, etc.)
      * 2. Create a ListTag to hold all connection positions
      * 3. For each connection:
-     *    a. Create a CompoundTag (like a JSON object)
-     *    b. Store the x, y, z coordinates as integers
-     *    c. Add this tag to the list
+     * a. Create a CompoundTag (like a JSON object)
+     * b. Store the x, y, z coordinates as integers
+     * c. Add this tag to the list
      * 4. Store the list in the main tag under the key "Connections"
-     *
+     * <p>
      * Why save connections but not the network?
      * - Connections are the fundamental data (what we explicitly created)
      * - The network can be rebuilt from connections (it's derived data)
      * - This saves disk space and prevents stale network data
-     *
+     * <p>
      * When the world loads, loadAdditional() will read this data back.
      *
-     * @param tag The NBT tag to write data into
+     * @param tag        The NBT tag to write data into
      * @param registries Registry access for complex data types (not used here)
      */
     @Override
@@ -874,29 +848,29 @@ public class RedstoneChainEntity extends BlockEntity {
 
     /**
      * Loads this block entity's data from disk (NBT format).
-     *
+     * <p>
      * This is the counterpart to saveAdditional(). It's called when:
      * - A chunk is loaded from disk
      * - The world is starting up
      * - The player enters a previously saved area
-     *
+     * <p>
      * What gets loaded:
      * 1. First, call the parent class to load standard data
      * 2. Clear the current connections list (start fresh)
      * 3. Get the "Connections" list from the NBT tag
-     *    - TAG_COMPOUND (10) indicates we're reading CompoundTags from the list
+     * - TAG_COMPOUND (10) indicates we're reading CompoundTags from the list
      * 4. For each entry in the list:
-     *    a. Cast it to CompoundTag
-     *    b. Read the x, y, z integers
-     *    c. Create a BlockPos from those coordinates
-     *    d. Add it to the connections list
+     * a. Cast it to CompoundTag
+     * b. Read the x, y, z integers
+     * c. Create a BlockPos from those coordinates
+     * d. Add it to the connections list
      * 5. Mark the network as dirty (needs rebuild)
-     *    - The network isn't saved, so we need to rebuild it from connections
-     *
+     * - The network isn't saved, so we need to rebuild it from connections
+     * <p>
      * After loading, the block entity has the same connections it had when saved,
      * and will rebuild its network on the next update.
      *
-     * @param tag The NBT tag to read data from
+     * @param tag        The NBT tag to read data from
      * @param registries Registry access for complex data types (not used here)
      */
     @Override
@@ -913,20 +887,20 @@ public class RedstoneChainEntity extends BlockEntity {
 
     /**
      * Creates a packet to sync this block entity's data to clients.
-     *
+     * <p>
      * This method is called when the client needs to be updated about changes to this
      * block entity. It's part of Minecraft's client-server synchronization system.
-     *
+     * <p>
      * The packet contains:
      * - The position of this block entity
      * - The data from getUpdateTag() (which includes our connections list)
-     *
+     * <p>
      * When the packet is sent:
      * 1. Server calls this method to create the packet
      * 2. Packet is sent to all clients watching this chunk
      * 3. Clients receive the packet and update their local copy
      * 4. The renderer uses the updated data to draw cables
-     *
+     * <p>
      * This is called automatically by syncToClient() via level.sendBlockUpdated().
      *
      * @return A packet containing this block entity's data for client sync
@@ -938,21 +912,21 @@ public class RedstoneChainEntity extends BlockEntity {
 
     /**
      * Creates an NBT tag containing data for client synchronization.
-     *
+     * <p>
      * This method is called when the client needs a complete snapshot of this block
      * entity's data. It's used in conjunction with getUpdatePacket().
-     *
+     * <p>
      * What this method does:
      * 1. Creates a new empty CompoundTag
      * 2. Calls saveAdditional() to populate it with our data
-     *    - This includes the connections list
+     * - This includes the connections list
      * 3. Returns the populated tag
-     *
+     * <p>
      * The difference between this and saveAdditional():
      * - saveAdditional() is for saving to disk (world save files)
      * - getUpdateTag() is for syncing to clients (network packets)
      * - We use the same data format for both (they need the same information)
-     *
+     * <p>
      * When a client joins or a chunk is loaded on the client:
      * 1. Server calls this method
      * 2. Returns a tag with all connection data
