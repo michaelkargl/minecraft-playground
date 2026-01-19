@@ -170,6 +170,8 @@ public class RedstoneChainEntity extends BlockEntity {
     }
 
     private boolean isAlreadyConnectedTo(BlockPos target) {
+        // we treat the entire network as a single entity for connection purposes
+        // if it is connected to any block in the target's network, it is connected to all
         return connections.contains(target);
     }
 
@@ -177,9 +179,84 @@ public class RedstoneChainEntity extends BlockEntity {
         return connections.size() >= Config.MAX_CONNECTIONS_PER_CHAIN.getAsInt();
     }
 
+    /**
+     * Checks if a target position is too far away to create a connection.
+     * <p>
+     * === UNDERSTANDING DISTANCE IN 3D SPACE ===
+     * <p>
+     * Imagine you want to measure the straight-line distance between two points in Minecraft
+     * (like measuring "as the crow flies"). In 3D space, you need to consider three dimensions:
+     * - X axis: east/west
+     * - Y axis: up/down
+     * - Z axis: north/south
+     * <p>
+     * If THIS block is at position (x1, y1, z1) and TARGET is at (x2, y2, z2):
+     * <pre>
+     * Step 1: Find the differences in each dimension
+     *   dx = x2 - x1  (how far east/west)
+     *   dy = y2 - y1  (how far up/down)
+     *   dz = z2 - z1  (how far north/south)
+     *
+     * Step 2: Calculate straight-line distance using Pythagorean theorem in 3D
+     *   distance = √(dx² + dy² + dz²)
+     *
+     *   ● THIS (x1,y1,z1)
+     *    \
+     *     \ distance
+     *      \
+     *       ● TARGET (x2,y2,z2)
+     *
+     * Example: THIS at (0,0,0), TARGET at (3,4,0)
+     *   dx = 3, dy = 4, dz = 0
+     *   distance = √(3² + 4² + 0²) = √(9 + 16 + 0) = √25 = 5 blocks
+     *   If 5 > MAX_DISTANCE, it's too far
+     * </pre>
+     * <p>
+     * === THE OPTIMIZATION TRICK ===
+     * <p>
+     * We want to check: "Is distance > MAX_DISTANCE?"
+     * Normally: √(dx² + dy² + dz²) > MAX_DISTANCE
+     * <p>
+     * But square root (√) is SLOW for computers to calculate. Here's the trick:
+     * If we square BOTH sides of the comparison, the inequality stays true!
+     * <p>
+     * Square both sides:
+     *   [√(dx² + dy² + dz²)]² > [MAX_DISTANCE]²
+     *
+     * The √ and ² cancel out on the left:
+     *   dx² + dy² + dz² > MAX_DISTANCE²
+     * <p>
+     * Now we can compare WITHOUT calculating the square root!
+     * This is what distSqr() returns: the "squared distance" = dx² + dy² + dz²
+     * <p>
+     * === CONCRETE EXAMPLE ===
+     * <p>
+     * If MAX_CONNECTION_DISTANCE = 24 blocks:
+     *   maxDistSqr = 24 × 24 = 576
+     * <p>
+     * Example 1: Target at offset (10, 0, 10) from THIS block
+     *   dx=10, dy=0, dz=10
+     *   distSqr = 10² + 0² + 10² = 100 + 0 + 100 = 200
+     *   Is 200 > 576? NO → Connection ALLOWED ✓
+     *   (Actual distance would be √200 ≈ 14.14 blocks, which is less than 24)
+     * <p>
+     * Example 2: Target at offset (20, 20, 20) from THIS block
+     *   dx=20, dy=20, dz=20
+     *   distSqr = 20² + 20² + 20² = 400 + 400 + 400 = 1200
+     *   Is 1200 > 576? YES → Connection REJECTED ✗
+     *   (Actual distance would be √1200 ≈ 34.64 blocks, which is more than 24)
+     *
+     * @param target The position we want to connect to
+     * @return true if target is beyond MAX_CONNECTION_DISTANCE, false if within range
+     */
     private boolean isTooFarAway(BlockPos target) {
-        double maxDistSq = Config.MAX_CONNECTION_DISTANCE.getAsInt() * Config.MAX_CONNECTION_DISTANCE.getAsInt();
-        return worldPosition.distSqr(target) > maxDistSq;
+        // Calculate the maximum allowed squared distance
+        // (We square the max distance so we can compare without using square root)
+        double maxDistSqr = Config.MAX_CONNECTION_DISTANCE.getAsInt() * Config.MAX_CONNECTION_DISTANCE.getAsInt();
+
+        // distSqr returns: dx²+dy²+dz²
+        // If this squared distance is greater than our max squared distance, it's too far
+        return worldPosition.distSqr(target) > maxDistSqr;
     }
 
     private void markNetworkDirty() {
@@ -192,11 +269,13 @@ public class RedstoneChainEntity extends BlockEntity {
     }
 
     private void mergeNetworkWithTarget(BlockPos target) {
-        if (level != null) {
-            BlockEntity be = level.getBlockEntity(target);
-            if (be instanceof RedstoneChainEntity other) {
-                mergeWithOtherNetwork(other);
-            }
+        if (level == null) {
+            return;
+        }
+
+        BlockEntity be = level.getBlockEntity(target);
+        if (be instanceof RedstoneChainEntity other) {
+            mergeWithOtherNetwork(other);
         }
     }
 
