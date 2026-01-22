@@ -4,6 +4,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.LeverBlock;
+import net.minecraft.world.level.block.RedstoneLampBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 
 
@@ -47,14 +49,50 @@ public class SimpleGameTests {
         assertBlockNameAtPosition(helper, "Redstone Lamp", redstoneLampPosition); // 9
         assertBlockNameAtPosition(helper, "Lever", leverBlockPosition); // 10
 
-        var redstoneLamp = helper.getBlockState(redstoneLampPosition);
-        var leverBlock = helper.getBlockState(leverBlockPosition);
-        LeverBlock b = (LeverBlock) leverBlock.getBlock();
 
+        var leverBlockState = helper.getBlockState(leverBlockPosition);
+          if (leverBlockState.getBlock() instanceof LeverBlock leverBlock) {
+            // run the lever action at tick 1
+            helper.runAtTickTime(1, () -> {
+                var absolutePos = helper.absolutePos(leverBlockPosition);
+                var currentState = helper.getBlockState(leverBlockPosition);
+                // triggers block state change (typically on the next game tick, not immediately)
+                leverBlock.pull(currentState, helper.getLevel(), absolutePos, null);
+            });
 
+            // Schedule assertions after the lever action completes
+            helper.runAtTickTime(2, () -> {
+                // Re-fetch block state since BlockState is immutable
+                var currentLeverState = helper.getBlockState(leverBlockPosition);
+                assertLeverIsPowered(helper, currentLeverState);
+                assertRedstoneLampIsLit(helper, redstoneLampPosition);
+                helper.succeed();
+            });
+        } else {
+            helper.fail("Block at lever position is not a lever");
+        }
+    }
 
-        // prevents "did not succeed or fail within 100 ticks" error
-        helper.succeed();
+    private static void assertLeverIsPowered(GameTestHelper helper, BlockState leverBlockState) {
+        if (leverBlockState.getBlock() instanceof LeverBlock leverBlock) {
+            var isPowered = leverBlockState.getValue(LeverBlock.POWERED);
+            helper.assertTrue(isPowered.booleanValue(), "Lever is not powered");
+        } else {
+            helper.fail("Block at lever position is not a lever");
+        }
+    }
+
+    private static void assertRedstoneLampIsLit(GameTestHelper helper, BlockState redstoneLampState) {
+        if (redstoneLampState.getBlock() instanceof RedstoneLampBlock redstoneLampBlock) {
+            var isLit = redstoneLampState.getValue(RedstoneLampBlock.LIT);
+            helper.assertTrue(isLit, "Redstone Lamp is not lit");
+        } else {
+            helper.fail("Block at redstone lamp position is not a redstone lamp");
+        }
+    }
+
+    private static void assertRedstoneLampIsLit(GameTestHelper helper, BlockPos position) {
+        assertRedstoneLampIsLit(helper, helper.getBlockState(position));
     }
 
     private static String getBlockNameAtPosition(GameTestHelper helper, int x, int y, int z) {
