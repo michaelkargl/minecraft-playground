@@ -51,7 +51,10 @@ TEST_MODE=${1:-"all"}
 case "$TEST_MODE" in
     "all"|"")
         print_info "Running all game tests..."
-        ./gradlew runGameTestServer | grep --color -e 'INFO.*' -e '^'
+        ./gradlew runGameTestServer \
+          | grep --color --regexp='ERROR.*' --regexp='^'
+#          | grep --color --regexp='========= .* GAME TESTS COMPLETE IN .* ======================' --regexp='^' \
+#          | grep --color --regexp='====*' --regexp='^'
         ;;
     "clean")
         print_info "Cleaning and running all game tests..."
