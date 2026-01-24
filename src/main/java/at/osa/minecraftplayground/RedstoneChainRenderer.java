@@ -59,6 +59,26 @@ public class RedstoneChainRenderer implements BlockEntityRenderer<RedstoneChainE
         return Config.BLUE_VALUE.getAsDouble();
     }
 
+    private static double getUnpoweredRedAlt() {
+        return Config.UNPOWERED_RED_ALT.getAsDouble();
+    }
+
+    private static double getPoweredRedBaseAlt() {
+        return Config.POWERED_RED_BASE_ALT.getAsDouble();
+    }
+
+    private static double getPoweredRedBonusAlt() {
+        return Config.POWERED_RED_BONUS_ALT.getAsDouble();
+    }
+
+    private static double getGreenValueAlt() {
+        return Config.GREEN_VALUE_ALT.getAsDouble();
+    }
+
+    private static double getBlueValueAlt() {
+        return Config.BLUE_VALUE_ALT.getAsDouble();
+    }
+
     @Override
     public void render(RedstoneChainEntity entity, float partialTicks, PoseStack stack,
                        MultiBufferSource buffer, int packedLight, int packedOverlay) {
@@ -85,10 +105,6 @@ public class RedstoneChainRenderer implements BlockEntityRenderer<RedstoneChainE
         VertexConsumer builder = buffer.getBuffer(RedstoneRenderType.CABLE);
         Matrix4f matrix = stack.last().pose();
 
-        float r = (float) getColorComponent(power, getUnpoweredRed(), getPoweredRedBase(), getPoweredRedBonus(), true);
-        float g = (float) getGreenValue();
-        float b = (float) getBlueValue();
-
         int segments = getCableSegments();
         for (int i = 0; i < segments; i++) {
             float t1 = i / (float) segments;
@@ -96,6 +112,20 @@ public class RedstoneChainRenderer implements BlockEntityRenderer<RedstoneChainE
 
             Vec3 p1 = interpolateCurved(from, to, t1);
             Vec3 p2 = interpolateCurved(from, to, t2);
+
+            // Select color set based on odd/even segment
+            float r, g, b;
+            if (i % 2 == 0) {
+                // Even segments: primary color
+                r = (float) getColorComponent(power, getUnpoweredRed(), getPoweredRedBase(), getPoweredRedBonus(), true);
+                g = (float) getGreenValue();
+                b = (float) getBlueValue();
+            } else {
+                // Odd segments: alternate color
+                r = (float) getColorComponent(power, getUnpoweredRedAlt(), getPoweredRedBaseAlt(), getPoweredRedBonusAlt(), true);
+                g = (float) getGreenValueAlt();
+                b = (float) getBlueValueAlt();
+            }
 
             drawSegment(builder, matrix, p1, p2, r, g, b, light, overlay);
         }

@@ -73,6 +73,18 @@
   "minecraftplayground.configuration.blueValue": "Blue Component",
   "minecraftplayground.configuration.blueValue.tooltip": "Blue component for cables (0.0 = no blue, 1.0 = full blue).",
 
+  "_comment_cableColorsAlt": "=== Alternate Cable Color Settings ===",
+  "minecraftplayground.configuration.unpoweredRedAlt": "Unpowered Red (Alternate)",
+  "minecraftplayground.configuration.unpoweredRedAlt.tooltip": "Red component for unpowered cables (alternate segments) (0.0 = no red, 1.0 = full red).",
+  "minecraftplayground.configuration.poweredRedBaseAlt": "Powered Red Base (Alternate)",
+  "minecraftplayground.configuration.poweredRedBaseAlt.tooltip": "Base red component for powered cables (alternate segments) (0.0 = no red, 1.0 = full red).",
+  "minecraftplayground.configuration.poweredRedBonusAlt": "Powered Red Bonus (Alternate)",
+  "minecraftplayground.configuration.poweredRedBonusAlt.tooltip": "Additional red component for powered cables (alternate segments) based on power level (0.0 = no extra red, 1.0 = full extra red).",
+  "minecraftplayground.configuration.greenValueAlt": "Green Component (Alternate)",
+  "minecraftplayground.configuration.greenValueAlt.tooltip": "Green component for cables (alternate segments) (0.0 = no green, 1.0 = full green).",
+  "minecraftplayground.configuration.blueValueAlt": "Blue Component (Alternate)",
+  "minecraftplayground.configuration.blueValueAlt.tooltip": "Blue component for cables (alternate segments) (0.0 = no blue, 1.0 = full blue).",
+
   "_comment_utility": "=== Utility & Debug Settings ===",
   "minecraftplayground.configuration.utility": "Utility",
   "minecraftplayground.configuration.logDirtBlock": "Log Dirt Block",

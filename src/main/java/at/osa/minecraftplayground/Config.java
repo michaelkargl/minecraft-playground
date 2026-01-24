@@ -86,6 +86,26 @@ public class Config {
             .comment("Blue component for cables (0.0 = no blue, 1.0 = full blue)")
             .defineInRange("blueValue", 0.0, 0.0, 1.0);
 
+     public static final ModConfigSpec.DoubleValue UNPOWERED_RED_ALT = BUILDER
+            .comment("Red component for unpowered cables (alternate segments)")
+            .defineInRange("unpoweredRedAlt", 0.1, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue POWERED_RED_BASE_ALT = BUILDER
+            .comment("Base red component for powered cables (alternate segments)")
+            .defineInRange("poweredRedBaseAlt", 0.3, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue POWERED_RED_BONUS_ALT = BUILDER
+            .comment("Additional red component based on power level (alternate segments)")
+            .defineInRange("poweredRedBonusAlt", 0.2, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue GREEN_VALUE_ALT = BUILDER
+            .comment("Green component for cables (alternate segments)")
+            .defineInRange("greenValueAlt", 0.0, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue BLUE_VALUE_ALT = BUILDER
+            .comment("Blue component for cables (alternate segments)")
+            .defineInRange("blueValueAlt", 0.0, 0.0, 1.0);
+
     static {
         BUILDER.pop();
     }
