@@ -67,11 +67,19 @@ public class Config {
 
     public static final ModConfigSpec.DoubleValue CABLE_THICKNESS_IN_BLOCKS = BUILDER
             .comment("Thickness of cable in blocks (0.03 = ~2 pixels)")
-            .defineInRange("cableThicknessPixels", 0.03, 0, 0.1);
+            .defineInRange("cableThicknessPixels", 0.03, 0, 1.0);
 
     public static double getCableThickness() {
         return Config.CABLE_THICKNESS_IN_BLOCKS.getAsDouble();
     }
+
+    public static int getCableSides() {
+        return Config.CABLE_SIDES.getAsInt();
+    }
+
+    public static final ModConfigSpec.IntValue CABLE_SIDES = BUILDER
+            .comment("Number of sides a cable has (4 = square, more = cylinder)")
+            .defineInRange("cableSides", 12, 10, 360);
 
     public static final ModConfigSpec.DoubleValue CABLE_SAG_AMOUNT = BUILDER
             .comment("Amount of sag at the middle of the cable (0.0 = no sag, -1.0 = full sag)")

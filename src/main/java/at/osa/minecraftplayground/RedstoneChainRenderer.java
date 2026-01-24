@@ -75,31 +75,77 @@ public class RedstoneChainRenderer implements BlockEntityRenderer<RedstoneChainE
     }
 
     /**
-     * Draw a single cable segment as two triangles (a quad).
+     * Draw a single cable segment as a rounded cylinder with many radial faces.
+     * Creates a rope-like appearance with outward-facing normals on all faces.
      */
     private void drawSegment(VertexConsumer builder, Matrix4f matrix, Vec3 p1, Vec3 p2,
                             float r, float g, float b, int light, int overlay) {
         Vec3 direction = p2.subtract(p1).normalize();
 
-        // Create perpendicular vector for thickness
+        // Create base perpendicular vector
         Vec3 up = Math.abs(direction.y) > 0.999 ? new Vec3(1, 0, 0) : new Vec3(0, 1, 0);
-        Vec3 perp = direction.cross(up).normalize().scale(Config.getCableThickness());
+        Vec3 basePerp = direction.cross(up).normalize().scale(Config.getCableThickness());
 
-        // Four corners of the quad
-        Vec3 p1a = p1.add(perp);
-        Vec3 p1b = p1.subtract(perp);
-        Vec3 p2a = p2.add(perp);
-        Vec3 p2b = p2.subtract(perp);
+        // Create multiple perpendicular vectors around the cable (12 faces for smooth cylinder)
+        int sides = Config.getCableSides();
+        Vec3[] perpVectors = new Vec3[sides];
+        for (int i = 0; i < sides; i++) {
+            double angle = (i / (double) sides) * 2 * Math.PI;
+            perpVectors[i] = rotateAroundAxis(basePerp, direction, Math.toDegrees(angle));
+        }
+
+        // Draw faces between consecutive perpendicular vectors
+        for (int i = 0; i < sides; i++) {
+            int next = (i + 1) % sides;
+
+            // 4 corners of this quad strip
+            Vec3 p1_current = p1.add(perpVectors[i]);
+            Vec3 p1_next = p1.add(perpVectors[next]);
+            Vec3 p2_current = p2.add(perpVectors[i]);
+            Vec3 p2_next = p2.add(perpVectors[next]);
+
+            // Draw quad - vertices ordered so normal points outward
+            drawQuad(builder, matrix, p1_current, p1_next, p2_next, p2_current, r, g, b, light, overlay);
+        }
+    }
+
+    /**
+     * Rotates a vector around an arbitrary axis using Rodrigues' rotation formula.
+     */
+    private Vec3 rotateAroundAxis(Vec3 v, Vec3 k, double angleDegrees) {
+        double angleRad = Math.toRadians(angleDegrees);
+        double cos = Math.cos(angleRad);
+        double sin = Math.sin(angleRad);
+        double oneMinusCos = 1.0 - cos;
+
+        Vec3 term1 = v.scale(cos);
+        Vec3 term2 = k.cross(v).scale(sin);
+        double dotProduct = k.dot(v);
+        Vec3 term3 = k.scale(dotProduct * oneMinusCos);
+
+        return term1.add(term2).add(term3);
+    }
+
+    /**
+     * Draw a single quad face (4 corners) as 2 triangles.
+     */
+    private void drawQuad(VertexConsumer builder, Matrix4f matrix,
+                         Vec3 c0, Vec3 c1, Vec3 c2, Vec3 c3,
+                         float r, float g, float b, int light, int overlay) {
+        // Calculate normal from the first two edges
+        Vec3 edge1 = c1.subtract(c0);
+        Vec3 edge2 = c2.subtract(c1);
+        Vec3 normal = edge1.cross(edge2).normalize();
 
         // First triangle
-        addVertex(builder, matrix, p1a, r, g, b, light, overlay);
-        addVertex(builder, matrix, p1b, r, g, b, light, overlay);
-        addVertex(builder, matrix, p2a, r, g, b, light, overlay);
+        addVertex(builder, matrix, c0, r, g, b, light, overlay, normal);
+        addVertex(builder, matrix, c1, r, g, b, light, overlay, normal);
+        addVertex(builder, matrix, c2, r, g, b, light, overlay, normal);
 
         // Second triangle
-        addVertex(builder, matrix, p1b, r, g, b, light, overlay);
-        addVertex(builder, matrix, p2b, r, g, b, light, overlay);
-        addVertex(builder, matrix, p2a, r, g, b, light, overlay);
+        addVertex(builder, matrix, c0, r, g, b, light, overlay, normal);
+        addVertex(builder, matrix, c2, r, g, b, light, overlay, normal);
+        addVertex(builder, matrix, c3, r, g, b, light, overlay, normal);
     }
 
     /**
@@ -128,15 +174,17 @@ public class RedstoneChainRenderer implements BlockEntityRenderer<RedstoneChainE
     }
 
     /**
-     * Adds a vertex to the builder.
+     * Adds a vertex to the builder with custom normal.
      */
     private void addVertex(VertexConsumer builder, Matrix4f matrix, Vec3 pos,
-                          float r, float g, float b, int light, int overlay) {
+                          float r, float g, float b, int light, int overlay, Vec3 normal) {
         builder.addVertex(matrix, (float) pos.x, (float) pos.y, (float) pos.z)
                 .setColor(r, g, b, 1f)
                 .setUv(0, 0)
                 .setOverlay(overlay)
                 .setLight(light)
-                .setNormal(0, 1, 0);
+                .setNormal((float) normal.x, (float) normal.y, (float) normal.z);
     }
+
+
 }
