@@ -23,63 +23,6 @@ public class RedstoneChainRenderer implements BlockEntityRenderer<RedstoneChainE
     }
 
     @Override
-    public int getViewDistance() {
-        return Config.MAX_RENDER_DISTANCE.getAsInt();
-    }
-
-    private static int getCableSegments() {
-        return Config.CABLE_SEGMENTS.getAsInt();
-    }
-
-    private static double getCableThickness() {
-        return Config.CABLE_THICKNESS_IN_BLOCKS.getAsDouble();
-    }
-
-    private static double getCableSagAmount() {
-        return Config.CABLE_SAG_AMOUNT.getAsDouble();
-    }
-
-    private static double getUnpoweredRed() {
-        return Config.UNPOWERED_RED.getAsDouble();
-    }
-
-    private static double getPoweredRedBase() {
-        return Config.POWERED_RED_BASE.getAsDouble();
-    }
-
-    private static double getPoweredRedBonus() {
-        return Config.POWERED_RED_BONUS.getAsDouble();
-    }
-
-    private static double getGreenValue() {
-        return Config.GREEN_VALUE.getAsDouble();
-    }
-
-    private static double getBlueValue() {
-        return Config.BLUE_VALUE.getAsDouble();
-    }
-
-    private static double getUnpoweredRedAlt() {
-        return Config.UNPOWERED_RED_ALT.getAsDouble();
-    }
-
-    private static double getPoweredRedBaseAlt() {
-        return Config.POWERED_RED_BASE_ALT.getAsDouble();
-    }
-
-    private static double getPoweredRedBonusAlt() {
-        return Config.POWERED_RED_BONUS_ALT.getAsDouble();
-    }
-
-    private static double getGreenValueAlt() {
-        return Config.GREEN_VALUE_ALT.getAsDouble();
-    }
-
-    private static double getBlueValueAlt() {
-        return Config.BLUE_VALUE_ALT.getAsDouble();
-    }
-
-    @Override
     public void render(RedstoneChainEntity entity, float partialTicks, PoseStack stack,
                        MultiBufferSource buffer, int packedLight, int packedOverlay) {
         BlockPos blockPos = entity.getBlockPos();
@@ -105,7 +48,7 @@ public class RedstoneChainRenderer implements BlockEntityRenderer<RedstoneChainE
         VertexConsumer builder = buffer.getBuffer(RedstoneRenderType.CABLE);
         Matrix4f matrix = stack.last().pose();
 
-        int segments = getCableSegments();
+        int segments = Config.getCableSegments();
         for (int i = 0; i < segments; i++) {
             float t1 = i / (float) segments;
             float t2 = (i + 1) / (float) segments;
@@ -117,14 +60,14 @@ public class RedstoneChainRenderer implements BlockEntityRenderer<RedstoneChainE
             float r, g, b;
             if (i % 2 == 0) {
                 // Even segments: primary color
-                r = (float) getColorComponent(power, getUnpoweredRed(), getPoweredRedBase(), getPoweredRedBonus(), true);
-                g = (float) getGreenValue();
-                b = (float) getBlueValue();
+                r = (float) getColorComponent(power, Config.getUnpoweredRed(), Config.getPoweredRedBase(), Config.getPoweredRedBonus(), true);
+                g = (float) Config.getGreenValue();
+                b = (float) Config.getBlueValue();
             } else {
                 // Odd segments: alternate color
-                r = (float) getColorComponent(power, getUnpoweredRedAlt(), getPoweredRedBaseAlt(), getPoweredRedBonusAlt(), true);
-                g = (float) getGreenValueAlt();
-                b = (float) getBlueValueAlt();
+                r = (float) getColorComponent(power, Config.getUnpoweredRedAlt(), Config.getPoweredRedBaseAlt(), Config.getPoweredRedBonusAlt(), true);
+                g = (float) Config.getGreenValueAlt();
+                b = (float) Config.getBlueValueAlt();
             }
 
             drawSegment(builder, matrix, p1, p2, r, g, b, light, overlay);
@@ -140,7 +83,7 @@ public class RedstoneChainRenderer implements BlockEntityRenderer<RedstoneChainE
 
         // Create perpendicular vector for thickness
         Vec3 up = Math.abs(direction.y) > 0.999 ? new Vec3(1, 0, 0) : new Vec3(0, 1, 0);
-        Vec3 perp = direction.cross(up).normalize().scale(getCableThickness());
+        Vec3 perp = direction.cross(up).normalize().scale(Config.getCableThickness());
 
         // Four corners of the quad
         Vec3 p1a = p1.add(perp);
@@ -166,7 +109,7 @@ public class RedstoneChainRenderer implements BlockEntityRenderer<RedstoneChainE
         if (isRed && power > 0) {
             return base + (power / 15.0f) * bonus;
         }
-        return isRed ? unpowered : (isRed ? 0 : getGreenValue());
+        return isRed ? unpowered : (isRed ? 0 : Config.getGreenValue());
     }
 
     /**
@@ -180,7 +123,7 @@ public class RedstoneChainRenderer implements BlockEntityRenderer<RedstoneChainE
             return linear;
         }
 
-        double sag = Math.sin(t * Math.PI) * getCableSagAmount();
+        double sag = Math.sin(t * Math.PI) * Config.getCableSagAmount();
         return new Vec3(linear.x, linear.y + sag, linear.z);
     }
 

@@ -20,17 +20,33 @@ public class Config {
             .comment("Maximum distance (in blocks) between two connected chain blocks. Connections beyond this distance are rejected.")
             .defineInRange("maxConnectionDistance", 24, 1, Integer.MAX_VALUE);
 
+    public static int getMaxConnectionDistance() {
+        return Config.MAX_CONNECTION_DISTANCE.getAsInt();
+    }
+
     public static final ModConfigSpec.IntValue MAX_CONNECTIONS_PER_CHAIN = BUILDER
             .comment("Maximum number of connections allowed per chain block. Prevents visual clutter and performance issues.")
             .defineInRange("maxConnectionsPerChain", 5, 1, Integer.MAX_VALUE);
+
+    public static int getMaxConnectionsPerChain() {
+        return Config.MAX_CONNECTIONS_PER_CHAIN.getAsInt();
+    }
 
     public static final ModConfigSpec.IntValue UPDATE_INTERVAL_TICKS = BUILDER
             .comment("How often to perform periodic network updates (in ticks). 20 ticks = 1 second. This acts as a backup to event-driven updates.")
             .defineInRange("updateIntervalTicks", 20, 1, Integer.MAX_VALUE);
 
+    public static int getUpdateIntervalTicks() {
+        return Config.UPDATE_INTERVAL_TICKS.getAsInt();
+    }
+
     public static final ModConfigSpec.IntValue SIGNAL_LOSS_DELAY_TICKS = BUILDER
             .comment("How many ticks to wait before clearing cached signal after input is lost. Prevents flickering when power briefly turns off.")
             .defineInRange("signalLossDelayTicks", 1, 0, Integer.MAX_VALUE);
+
+    public static int getSignalLossDelayTicks() {
+        return Config.SIGNAL_LOSS_DELAY_TICKS.getAsInt();
+    }
 
     static {
         BUILDER.pop();
@@ -45,17 +61,33 @@ public class Config {
             .comment("Number of segments to divide cable into (more = smoother curve)")
             .defineInRange("cableSegments", 8, 1, 100);
 
+    public static int getCableSegments() {
+        return Config.CABLE_SEGMENTS.getAsInt();
+    }
+
     public static final ModConfigSpec.DoubleValue CABLE_THICKNESS_IN_BLOCKS = BUILDER
             .comment("Thickness of cable in blocks (0.03 = ~2 pixels)")
             .defineInRange("cableThicknessPixels", 0.03, 0, 0.1);
+
+    public static double getCableThickness() {
+        return Config.CABLE_THICKNESS_IN_BLOCKS.getAsDouble();
+    }
 
     public static final ModConfigSpec.DoubleValue CABLE_SAG_AMOUNT = BUILDER
             .comment("Amount of sag at the middle of the cable (0.0 = no sag, -1.0 = full sag)")
             .defineInRange("cableSagAmount", -1.0, -1.0, 0);
 
+    public static double getCableSagAmount() {
+        return Config.CABLE_SAG_AMOUNT.getAsDouble();
+    }
+
     public static final ModConfigSpec.IntValue MAX_RENDER_DISTANCE = BUILDER
             .comment("Maximum distance to render cables (in blocks)")
             .defineInRange("maxRenderDistance", 128, 1, 512);
+
+    public static int getViewDistance() {
+        return Config.MAX_RENDER_DISTANCE.getAsInt();
+    }
 
     static {
         BUILDER.pop();
@@ -70,41 +102,81 @@ public class Config {
             .comment("Red component for unpowered cables (0.0 = no red, 1.0 = full red)")
             .defineInRange("unpoweredRed", 0.3, 0.0, 1.0);
 
+    public static double getUnpoweredRed() {
+        return Config.UNPOWERED_RED.getAsDouble();
+    }
+
     public static final ModConfigSpec.DoubleValue POWERED_RED_BASE = BUILDER
             .comment("Base red component for powered cables (0.0 = no red, 1.0 = full red)")
             .defineInRange("poweredRedBase", 0.6, 0.0, 1.0);
+
+    public static double getPoweredRedBase() {
+        return Config.POWERED_RED_BASE.getAsDouble();
+    }
 
     public static final ModConfigSpec.DoubleValue POWERED_RED_BONUS = BUILDER
             .comment("Additional red component for powered cables based on power level (0.0 = no extra red, 1.0 = full extra red)")
             .defineInRange("poweredRedBonus", 0.3, 0.0, 1.0);
 
+    public static double getPoweredRedBonus() {
+        return Config.POWERED_RED_BONUS.getAsDouble();
+    }
+
     public static final ModConfigSpec.DoubleValue GREEN_VALUE = BUILDER
             .comment("Green component for cables (0.0 = no green, 1.0 = full green)")
             .defineInRange("greenValue", 0.0, 0.0, 1.0);
+
+    public static double getGreenValue() {
+        return Config.GREEN_VALUE.getAsDouble();
+    }
 
     public static final ModConfigSpec.DoubleValue BLUE_VALUE = BUILDER
             .comment("Blue component for cables (0.0 = no blue, 1.0 = full blue)")
             .defineInRange("blueValue", 0.0, 0.0, 1.0);
 
-     public static final ModConfigSpec.DoubleValue UNPOWERED_RED_ALT = BUILDER
+    public static double getBlueValue() {
+        return Config.BLUE_VALUE.getAsDouble();
+    }
+
+    public static final ModConfigSpec.DoubleValue UNPOWERED_RED_ALT = BUILDER
             .comment("Red component for unpowered cables (alternate segments)")
             .defineInRange("unpoweredRedAlt", 0.1, 0.0, 1.0);
+
+    public static double getUnpoweredRedAlt() {
+        return Config.UNPOWERED_RED_ALT.getAsDouble();
+    }
 
     public static final ModConfigSpec.DoubleValue POWERED_RED_BASE_ALT = BUILDER
             .comment("Base red component for powered cables (alternate segments)")
             .defineInRange("poweredRedBaseAlt", 0.3, 0.0, 1.0);
 
+    public static double getPoweredRedBaseAlt() {
+        return Config.POWERED_RED_BASE_ALT.getAsDouble();
+    }
+
     public static final ModConfigSpec.DoubleValue POWERED_RED_BONUS_ALT = BUILDER
             .comment("Additional red component based on power level (alternate segments)")
             .defineInRange("poweredRedBonusAlt", 0.2, 0.0, 1.0);
+
+    public static double getPoweredRedBonusAlt() {
+        return Config.POWERED_RED_BONUS_ALT.getAsDouble();
+    }
 
     public static final ModConfigSpec.DoubleValue GREEN_VALUE_ALT = BUILDER
             .comment("Green component for cables (alternate segments)")
             .defineInRange("greenValueAlt", 0.0, 0.0, 1.0);
 
+    public static double getGreenValueAlt() {
+        return Config.GREEN_VALUE_ALT.getAsDouble();
+    }
+
     public static final ModConfigSpec.DoubleValue BLUE_VALUE_ALT = BUILDER
             .comment("Blue component for cables (alternate segments)")
             .defineInRange("blueValueAlt", 0.0, 0.0, 1.0);
+
+    public static double getBlueValueAlt() {
+        return Config.BLUE_VALUE_ALT.getAsDouble();
+    }
 
     static {
         BUILDER.pop();
