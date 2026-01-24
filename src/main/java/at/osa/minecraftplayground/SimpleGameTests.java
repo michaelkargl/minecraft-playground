@@ -22,27 +22,36 @@ public class SimpleGameTests {
 
     @GameTest
     public static void coordinatesTest(GameTestHelper helper) {
-        //   x
-        //   * ---->
-        // z |\ (up/down)
-        //   v y
         //
-        // x = horizontal (left, right)
-        // y = normal (up / down)
-        // z = vertical (forward, backward)
+        //   x-axis: horizontal (west ← → east)
+        //   y-axis: vertical (down ↓ ↑ up)
+        //   z-axis: depth (north ↑ ↓ south)
         //
-        // Test special positions
-        assertBlockNameAtPosition(helper, "Structure Block", 0, 0, 0); // coordinate origin
-        assertBlockNameAtPosition(helper, "Air", 0, 2, 0);  // above the blue wool
+        // Visual representation from above (bird's eye view):
+        //        x →
+        //      0   1   2   3   4
+        //    ┌─────────────────────
+        // z 0│ BW  LBW  DB  RW  BrW
+        // ↓ 1│ LBW  BW  DB  BrW  RW
+        //   2│ ISB ISB  BlW RNB RNB
+        //   3│ YW  OW   Br  GW  LW
+        //   4│ OW  YW   Br  LW  GW
+        //
+        // Legend: BW=Blue Wool, LBW=Light Blue Wool, DB=Deepslate Bricks,
+        //         RW=Red Wool, BrW=Brown Wool, ISB=Infested Stone Bricks,
+        //         BlW=Black Wool, RNB=Red Nether Bricks, YW=Yellow Wool,
+        //         OW=Orange Wool, Br=Bricks, GW=Green Wool, LW=Lime Wool
 
-        // Define the expected 3x3 grid at y=1 (2D array indexed by [z][x])
-        // This represents the horizontal plane one block above the structure block
+        // Test origin and reference points
+        assertBlockNameAtPosition(helper, "Structure Block", 0, 0, 0); // (0,0,0) - structure origin
+        assertBlockNameAtPosition(helper, "Air", 0, 2, 0);  // (0,2,0) - two blocks above origin
+
         String[][] expectedGrid = {
-            {"Blue Wool", "Light Blue Wool", "Deepslate Bricks", "Red Wool", "Brown Wool"},
-            {"Light Blue Wool", "Blue Wool", "Deepslate Bricks", "Brown Wool", "Red Wool"},
-            {"Infested Stone Bricks", "Infested Stone Bricks", "Black Wool", "Red Nether Bricks", "Red Nether Bricks"},
-            {"Yellow Wool", "Orange Wool", "Bricks", "Green Wool", "Lime Wool"},
-            {"Orange Wool", "Yellow Wool", "Bricks", "Lime Wool", "Green Wool"}
+            {"Blue Wool", "Light Blue Wool", "Deepslate Bricks", "Red Wool", "Brown Wool"},                    // z=0
+            {"Light Blue Wool", "Blue Wool", "Deepslate Bricks", "Brown Wool", "Red Wool"},                    // z=1
+            {"Infested Stone Bricks", "Infested Stone Bricks", "Black Wool", "Red Nether Bricks", "Red Nether Bricks"}, // z=2
+            {"Yellow Wool", "Orange Wool", "Bricks", "Green Wool", "Lime Wool"},                               // z=3
+            {"Orange Wool", "Yellow Wool", "Bricks", "Lime Wool", "Green Wool"}                                // z=4
         };
 
         validate2DXZGrid(helper, expectedGrid, 0, 0, 1);
