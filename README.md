@@ -1,3 +1,4 @@
+![Redstone Wire! Redstone in, Redstone out! Easy!](images/redstone-wire-text.png)
 
 Installation information
 =======
