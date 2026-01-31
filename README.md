@@ -1,5 +1,66 @@
 ![Redstone Wire! Redstone in, Redstone out! Easy!](images/redstone-wire-text.png)
 
+CI/CD Status
+=======
+
+[![Build and Test](https://github.com/[YOUR-USERNAME]/[YOUR-REPO-NAME]/actions/workflows/build.yml/badge.svg)](https://github.com/[YOUR-USERNAME]/[YOUR-REPO-NAME]/actions/workflows/build.yml)
+
+> **Note:** Replace `[YOUR-USERNAME]` and `[YOUR-REPO-NAME]` with your actual GitHub repository details.
+
+### Workflow Overview
+
+The GitHub Actions workflow automatically:
+1. **Builds** the mod on every push and pull request
+2. **Runs GameTests** to ensure functionality
+3. **Publishes JAR artifacts** that can be downloaded from the workflow page
+4. **Blocks merges** if tests fail (when branch protection is enabled)
+
+### Workflow Jobs
+
+- **Build Job**: Compiles the mod using Gradle and creates the JAR artifact
+  - Artifact: `build/libs/minecraftplayground-1.0.0.jar`
+  - Retention: 30 days
+  - Gradle caching: Automatically managed by `gradle/actions/setup-gradle@v4`
+
+- **Test Job**: Executes NeoForge GameTests via `run_tests.sh`
+  - Tests: coordinatesTest, leverActionTest, leverinputoutputtest
+  - Logs: Automatically collected and available as artifacts (on success or failure)
+  - Retention: 7 days
+
+### Downloading Artifacts
+
+To download the built JAR from a successful workflow:
+1. Go to **Actions** tab in GitHub
+2. Click on the successful workflow run for your branch
+3. Scroll to the **Artifacts** section at the bottom
+4. Download `minecraftplayground-[branch]-[sha].zip`
+5. Extract the JAR from `build/libs/`
+
+### Enabling Branch Protection (Optional)
+
+To block merges when tests fail:
+1. Go to **Settings → Branches** in GitHub
+2. Add a branch protection rule for `main` (or your default branch)
+3. Enable **"Require status checks to pass before merging"**
+4. Select the **build** and **test** jobs as required checks
+5. Enable **"Require branches to be up to date before merging"**
+
+### Troubleshooting CI Issues
+
+**Build fails with Gradle errors:**
+- Check the build logs in the Actions tab
+- Ensure all dependencies are properly declared in `build.gradle`
+- Gradle caching is automatic with `setup-gradle` action
+
+**GameTests fail in CI but pass locally:**
+- Download the test logs artifact from the failed workflow run
+- Check for environment differences (Java version, system properties)
+- Ensure `run_tests.sh` has proper line endings (Unix LF, not Windows CRLF)
+
+**Workflow doesn't trigger:**
+- Verify `.github/workflows/build.yml` is in the correct location
+- Check the workflow file syntax is valid YAML
+- Ensure Actions are enabled in **Settings → Actions → General**
 
 Project Management
 =======
