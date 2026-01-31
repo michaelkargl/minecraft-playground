@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 
+
 // structure name is <classname>.<testname>.nbt (all lowercase)
 // create a structure by
 // 1. creating a @GameTest annotated test function
@@ -96,37 +97,33 @@ public class SimpleGameTests extends GameTestFramework {
     //   4│ OW  YW   Br  LW  GW
     @GameTest(template = "leverinputoutputtest")
     public static void leverinputoutputtest(GameTestHelper helper) {
-        var tick = 0;
         var inputChainBlockPosition = new BlockPos(1, 2, 1);
         var outputChainBlockPosition = new BlockPos(3, 2, 3);
         var leverPosition = new BlockPos(0, 2, 1);
         var redstoneWirePosition = new BlockPos(4, 2, 3);
-
-        // Verify the structure has the correct blocks
-        assertBlockNameAtPosition(helper, "Redstone Chain", inputChainBlockPosition);
-        assertBlockNameAtPosition(helper, "Redstone Chain", outputChainBlockPosition);
-        assertBlockNameAtPosition(helper, "Lever", leverPosition);
-        // Verify that the blocks have the expected initial state
-        assertLeverIsPowered(helper, leverPosition, false);
-        assertRedstoneWirePowered(helper, redstoneWirePosition, false);
-
         var connectorItem = new ItemStack(MinecraftPlayground.REDSTONE_CHAIN_CONNECTOR.get());
-        // Connect the wires
-        helper.runAtTickTime(++tick, () -> {
-            // First click: crouch-click the first chain block to save its position
-            useItemOn(helper, inputChainBlockPosition, connectorItem);
-            useItemOn(helper, outputChainBlockPosition, connectorItem);
-            assertChainBlocksAreConnected(helper, inputChainBlockPosition, outputChainBlockPosition);
-        });
 
-        // Activate the lever and verify the output
-        helper.runAtTickTime(++tick, () -> {
-            helper.pullLever(leverPosition);
-            assertRedstoneWirePowered(helper, redstoneWirePosition, true);
-        });
-
-        // ensure this is run as the last tick
-        helper.runAtTickTime(++tick, helper::succeed);
+        new SpecFlowBase(helper)
+            .given("The structure is set up correctly", () -> {
+                assertBlockNameAtPosition(helper, "Redstone Chain", inputChainBlockPosition);
+                assertBlockNameAtPosition(helper, "Redstone Chain", outputChainBlockPosition);
+                assertBlockNameAtPosition(helper, "Lever", leverPosition);
+                assertLeverIsPowered(helper, leverPosition, false);
+                assertRedstoneWirePowered(helper, redstoneWirePosition, false);
+            })
+            .when("I connect the two Redstone Chain blocks", () -> {
+                useItemOn(helper, inputChainBlockPosition, connectorItem);
+                useItemOn(helper, outputChainBlockPosition, connectorItem);
+            })
+            .then("They should be connected bidirectionally", () -> {
+                assertChainBlocksAreConnected(helper, inputChainBlockPosition, outputChainBlockPosition);
+            })
+            .when("I pull the lever", () -> {
+                helper.pullLever(leverPosition);
+            })
+            .thenSucceed("The redstone wire should be powered", () -> {
+                assertRedstoneWirePowered(helper, redstoneWirePosition, true);
+            });
     }
 
     /**
