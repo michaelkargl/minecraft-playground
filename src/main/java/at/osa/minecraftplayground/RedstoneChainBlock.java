@@ -28,6 +28,8 @@ import java.util.Set;
 /**
  * A redstone chain block that can transmit redstone signals.
  * <p>
+ * Block shape: Full cube block (16x16x16 pixels) - standard Minecraft block
+ * <p>
  * Supports two types of connections:
  * 1. Traditional adjacent connections (touching blocks)
  * 2. Long-range cable connections via RedstoneChainEntity (up to 24 blocks)
@@ -89,8 +91,8 @@ public class RedstoneChainBlock extends Block implements EntityBlock {
      * 2. What parts of the block you can collide with
      * 3. Where you can place other blocks around it
      * <p>
-     * Our chain block uses a thin vertical shape (like a chain segment or pole) defined in SHAPE.
-     * The coordinates are in pixels: from (6.5, 0, 6.5) to (9.5, 16, 9.5), making it a 3x16x3 pixel column.
+     * Our chain block uses a full cube shape (16 pixels on all sides) defined in SHAPE.
+     * The coordinates are in pixels: from (0, 0, 0) to (16, 16, 16), making it a standard full block.
      *
      * @param state   The current state of the block
      * @param level   The world/level the block is in

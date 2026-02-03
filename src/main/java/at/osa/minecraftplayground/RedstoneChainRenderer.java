@@ -44,13 +44,13 @@ public class RedstoneChainRenderer implements BlockEntityRenderer<RedstoneChainE
             // Only render cable once per connection (compareTo ensures A->B is only rendered from A)
             // This avoids rendering the same cable twice
             if (blockPos.compareTo(connection) < 0) {
-                // Start point is the center of current block (0.5, 0.5, 0.5)
-                Vec3 start = new Vec3(0.5, 0.5, 0.5);
+                // Start point is the top center of the full block (0.5, 1.0, 0.5)
+                Vec3 start = new Vec3(0.5, 1.0, 0.5);
 
-                // End point is the center of connected block, relative to current block
+                // End point is the top center of connected block, relative to current block
                 Vec3 end = Vec3.atCenterOf(connection)
                         .subtract(Vec3.atCenterOf(blockPos))
-                        .add(0.5, 0.5, 0.5);
+                        .add(0.5, 1.0, 0.5);
 
                 renderCable(stack, buffer, start, end, power, packedLight, packedOverlay);
             }

@@ -1,7 +1,6 @@
 {
-  "parent": "minecraft:block/chain",
+  "parent": "minecraft:block/cube_all",
   "textures": {
-    "particle": "minecraft:block/chain",
-    "all": "minecraft:block/chain"
+    "all": "minecraft:block/redstone_block"
   }
 }
