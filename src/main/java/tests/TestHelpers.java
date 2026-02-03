@@ -1,5 +1,6 @@
-package at.osa.minecraftplayground;
+package tests;
 
+import at.osa.minecraftplayground.RedstoneChainEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -11,13 +12,14 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeverBlock;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.block.RedstoneLampBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
-public class GameTestFramework {
+public class TestHelpers {
 
-    protected static void pullLever(GameTestHelper helper, BlockPos relativePosition) {
+    public static void pullLever(GameTestHelper helper, BlockPos relativePosition) {
         var absolutePos = helper.absolutePos(relativePosition);
         var currentState = helper.getBlockState(relativePosition);
 
@@ -30,16 +32,16 @@ public class GameTestFramework {
         leverBlock.pull(currentState, helper.getLevel(), absolutePos, null);
     }
 
-    protected static void assertLeverIsPowered(GameTestHelper helper, int x, int y, int z, boolean expected) {
+    public static void assertLeverIsPowered(GameTestHelper helper, int x, int y, int z, boolean expected) {
         assertLeverIsPowered(helper, new BlockPos(x, y, z), expected);
     }
 
-    protected static void assertLeverIsPowered(GameTestHelper helper, BlockPos leverPosition, boolean expected) {
+    public static void assertLeverIsPowered(GameTestHelper helper, BlockPos leverPosition, boolean expected) {
         var blockState = helper.getBlockState(leverPosition);
         assertLeverIsPowered(helper, blockState, expected);
     }
 
-    protected static void assertLeverIsPowered(GameTestHelper helper, BlockState leverBlockState, boolean expected) {
+    public static void assertLeverIsPowered(GameTestHelper helper, BlockState leverBlockState, boolean expected) {
         var block = leverBlockState.getBlock();
         if (!(block instanceof LeverBlock leverBlock)) {
             helper.fail("Block at lever position is not a lever but a %s".formatted(block.getName()));
@@ -53,7 +55,7 @@ public class GameTestFramework {
         }
     }
 
-    protected static void assertRedstoneLampIsLit(GameTestHelper helper, BlockState redstoneLampState) {
+    public static void assertRedstoneLampIsLit(GameTestHelper helper, BlockState redstoneLampState) {
         if (redstoneLampState.getBlock() instanceof RedstoneLampBlock redstoneLampBlock) {
             var isLit = redstoneLampState.getValue(RedstoneLampBlock.LIT);
             helper.assertTrue(isLit, "Redstone Lamp is not lit");
@@ -62,27 +64,27 @@ public class GameTestFramework {
         }
     }
 
-    protected static void assertRedstoneLampIsLit(GameTestHelper helper, BlockPos position) {
+    public static void assertRedstoneLampIsLit(GameTestHelper helper, BlockPos position) {
         assertRedstoneLampIsLit(helper, helper.getBlockState(position));
     }
 
-    protected static String getBlockNameAtPosition(GameTestHelper helper, int x, int y, int z) {
+    public static String getBlockNameAtPosition(GameTestHelper helper, int x, int y, int z) {
         var pos = new BlockPos(x, y, z);
         var state = helper.getBlockState(pos);
         var block = state.getBlock();
         return block.getName().getString();
     }
 
-    protected static void assertBlockNameAtPosition(GameTestHelper helper, String expected, int x, int y, int z) {
+    public static void assertBlockNameAtPosition(GameTestHelper helper, String expected, int x, int y, int z) {
         var blockName = getBlockNameAtPosition(helper, x, y, z);
         helper.assertTrue(blockName.equals(expected), "Block at position is not a %s but a %s".formatted(expected, blockName));
     }
 
-    protected static void assertBlockNameAtPosition(GameTestHelper helper, String expected, BlockPos pos) {
+    public static void assertBlockNameAtPosition(GameTestHelper helper, String expected, BlockPos pos) {
         assertBlockNameAtPosition(helper, expected, pos.getX(), pos.getY(), pos.getZ());
     }
 
-    protected static void validate2DXZGrid(GameTestHelper helper, String[][] expectedGrid, int startX, int startZ, int y) {
+    public static void validate2DXZGrid(GameTestHelper helper, String[][] expectedGrid, int startX, int startZ, int y) {
         for (int z = startZ; z < expectedGrid.length; z++) {
             for (int x = startX; x < expectedGrid[z].length; x++) {
                 assertBlockNameAtPosition(helper, expectedGrid[z][x], x, y, z);
@@ -98,7 +100,7 @@ public class GameTestFramework {
      * @param blockPos The position of the block to interact with (relative coordinates)
      * @param itemStack The item stack the player is holding
      */
-    protected static void useItemOn(GameTestHelper helper, BlockPos blockPos, ItemStack itemStack) {
+    public static void useItemOn(GameTestHelper helper, BlockPos blockPos, ItemStack itemStack) {
         var absolutePos = helper.absolutePos(blockPos);
         var player = helper.makeMockPlayer(GameType.SURVIVAL);
         player.setItemInHand(InteractionHand.MAIN_HAND, itemStack);
@@ -109,13 +111,13 @@ public class GameTestFramework {
         itemStack.useOn(context);
     }
 
-    protected static void ensureRedstoneWireBlock(Block block) {
+    public static void ensureRedstoneWireBlock(Block block) {
         if (!(block instanceof RedStoneWireBlock)) {
             throw new IllegalArgumentException("Block is not a redstone wire but a " + block.getName());
         }
     }
 
-    protected static void assertRedstoneWirePowered(GameTestHelper helper, BlockPos pos, boolean expectedState) {
+    public static void assertRedstoneWirePowered(GameTestHelper helper, BlockPos pos, boolean expectedState) {
         var blockState = helper.getBlockState(pos);
         var block = blockState.getBlock();
         ensureRedstoneWireBlock(block);
@@ -126,5 +128,41 @@ public class GameTestFramework {
         } else {
             helper.assertValueEqual(powerLevel, 0, "Redstone wire at is powered");
         }
+    }
+
+    /**
+     * Asserts that two RedstoneChain blocks are connected to each other.
+     * Verifies bidirectional connection: A→B and B→A.
+     *
+     * @param helper The GameTestHelper
+     * @param pos1   First chain block position
+     * @param pos2   Second chain block position
+     */
+    public static void assertChainBlocksAreConnected(GameTestHelper helper, BlockPos pos1, BlockPos pos2) {
+        var absolutePos1 = helper.absolutePos(pos1);
+        var absolutePos2 = helper.absolutePos(pos2);
+
+        BlockEntity be1 = helper.getLevel().getBlockEntity(absolutePos1);
+        BlockEntity be2 = helper.getLevel().getBlockEntity(absolutePos2);
+
+        if (!(be1 instanceof RedstoneChainEntity chain1)) {
+            helper.fail("Block at " + pos1 + " is not a RedstoneChainEntity");
+            return;
+        }
+
+        if (!(be2 instanceof RedstoneChainEntity chain2)) {
+            helper.fail("Block at " + pos2 + " is not a RedstoneChainEntity");
+            return;
+        }
+
+        // Check if chain1 has a connection to pos2
+        boolean chain1HasConnectionToChain2 = chain1.getConnections().contains(absolutePos2);
+        helper.assertTrue(chain1HasConnectionToChain2,
+                "Chain at " + pos1 + " does not have a connection to " + pos2);
+
+        // Check if chain2 has a connection to pos1
+        boolean chain2HasConnectionToChain1 = chain2.getConnections().contains(absolutePos1);
+        helper.assertTrue(chain2HasConnectionToChain1,
+                "Chain at " + pos2 + " does not have a connection to " + pos1);
     }
 }

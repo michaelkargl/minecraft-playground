@@ -1,15 +1,14 @@
-package at.osa.minecraftplayground;
+package tests;
 
+import at.osa.minecraftplayground.MinecraftPlayground;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeverBlock;
-import net.minecraft.world.level.block.RedStoneWireBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.gametest.GameTestHolder;
+
+import static tests.TestHelpers.*;
 
 
 // structure name is <classname>.<testname>.nbt (all lowercase)
@@ -19,7 +18,7 @@ import net.neoforged.neoforge.gametest.GameTestHolder;
 // 3. connecting via dev client
 // 4. run /test create <classname>.<testname>
 @GameTestHolder("minecraftplayground")
-public class SimpleGameTests extends GameTestFramework {
+public class SimpleGameTests {
 
     @GameTest
     public static void coordinatesTest(GameTestHelper helper) {
@@ -103,62 +102,28 @@ public class SimpleGameTests extends GameTestFramework {
         var redstoneWirePosition = new BlockPos(4, 2, 3);
         var connectorItem = new ItemStack(MinecraftPlayground.REDSTONE_CHAIN_CONNECTOR.get());
 
-        new SpecFlowBase(helper)
-            .given("The structure is set up correctly", () -> {
-                assertBlockNameAtPosition(helper, "Redstone Chain", inputChainBlockPosition);
-                assertBlockNameAtPosition(helper, "Redstone Chain", outputChainBlockPosition);
-                assertBlockNameAtPosition(helper, "Lever", leverPosition);
-                assertLeverIsPowered(helper, leverPosition, false);
-                assertRedstoneWirePowered(helper, redstoneWirePosition, false);
-            })
-            .when("I connect the two Redstone Chain blocks", () -> {
-                useItemOn(helper, inputChainBlockPosition, connectorItem);
-                useItemOn(helper, outputChainBlockPosition, connectorItem);
-            })
-            .then("They should be connected bidirectionally", () -> {
-                assertChainBlocksAreConnected(helper, inputChainBlockPosition, outputChainBlockPosition);
-            })
-            .when("I pull the lever", () -> {
-                helper.pullLever(leverPosition);
-            })
-            .thenSucceed("The redstone wire should be powered", () -> {
-                assertRedstoneWirePowered(helper, redstoneWirePosition, true);
-            });
+        new SpecFlow(helper)
+                .given("The structure is set up correctly", () -> {
+                    assertBlockNameAtPosition(helper, "Redstone Chain", inputChainBlockPosition);
+                    assertBlockNameAtPosition(helper, "Redstone Chain", outputChainBlockPosition);
+                    assertBlockNameAtPosition(helper, "Lever", leverPosition);
+                    assertLeverIsPowered(helper, leverPosition, false);
+                    assertRedstoneWirePowered(helper, redstoneWirePosition, false);
+                })
+                .when("I connect the two Redstone Chain blocks", () -> {
+                    useItemOn(helper, inputChainBlockPosition, connectorItem);
+                    useItemOn(helper, outputChainBlockPosition, connectorItem);
+                })
+                .then("They should be connected bidirectionally", () -> {
+                    assertChainBlocksAreConnected(helper, inputChainBlockPosition, outputChainBlockPosition);
+                })
+                .when("I pull the lever", () -> {
+                    helper.pullLever(leverPosition);
+                })
+                .then("The redstone wire should be powered", () -> {
+                    assertRedstoneWirePowered(helper, redstoneWirePosition, true);
+                })
+                .then("Test succeeds", helper::succeed);
     }
 
-    /**
-     * Asserts that two RedstoneChain blocks are connected to each other.
-     * Verifies bidirectional connection: A→B and B→A.
-     *
-     * @param helper The GameTestHelper
-     * @param pos1   First chain block position
-     * @param pos2   Second chain block position
-     */
-    protected static void assertChainBlocksAreConnected(GameTestHelper helper, BlockPos pos1, BlockPos pos2) {
-        var absolutePos1 = helper.absolutePos(pos1);
-        var absolutePos2 = helper.absolutePos(pos2);
-
-        BlockEntity be1 = helper.getLevel().getBlockEntity(absolutePos1);
-        BlockEntity be2 = helper.getLevel().getBlockEntity(absolutePos2);
-
-        if (!(be1 instanceof RedstoneChainEntity chain1)) {
-            helper.fail("Block at " + pos1 + " is not a RedstoneChainEntity");
-            return;
-        }
-
-        if (!(be2 instanceof RedstoneChainEntity chain2)) {
-            helper.fail("Block at " + pos2 + " is not a RedstoneChainEntity");
-            return;
-        }
-
-        // Check if chain1 has a connection to pos2
-        boolean chain1HasConnectionToChain2 = chain1.getConnections().contains(absolutePos2);
-        helper.assertTrue(chain1HasConnectionToChain2,
-                "Chain at " + pos1 + " does not have a connection to " + pos2);
-
-        // Check if chain2 has a connection to pos1
-        boolean chain2HasConnectionToChain1 = chain2.getConnections().contains(absolutePos1);
-        helper.assertTrue(chain2HasConnectionToChain1,
-                "Chain at " + pos2 + " does not have a connection to " + pos1);
-    }
 }
