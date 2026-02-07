@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,22 +51,20 @@ public class RedstoneChainBlock extends Block implements EntityBlock {
 
     /**
      * Visual and collision shape of the block.
-     * A thin vertical pole (3x16x3 pixels) instead of a full cube.
-     * Coordinates: (6.5, 0, 6.5) to (9.5, 16, 9.5)
+     * A full block (16x16x16 pixels) - standard Minecraft block dimensions.
      */
-    private static final VoxelShape SHAPE = Block.box(6.5, 0, 6.5, 9.5, 16, 9.5);
+    private static final VoxelShape SHAPE = Shapes.block();
 
     /**
      * Constructor for the RedstoneChainBlock.
      * <p>
      * This initializes a new redstone chain block with the given properties.
-     * The block is set to not occlude (block) other blocks, allowing things like light to pass through.
      * The default state is registered with a POWER value of 0, meaning the block starts unpowered.
      *
      * @param properties The block properties (like hardness, sound type, etc.)
      */
     public RedstoneChainBlock(Properties properties) {
-        super(properties.noOcclusion());
+        super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(POWER, 0));
     }
 
@@ -84,26 +83,26 @@ public class RedstoneChainBlock extends Block implements EntityBlock {
     }
 
     /**
-     * Defines the physical shape and collision box of this block.
+     * Defines the visual shape of this block for rendering and selection box.
      * <p>
      * This method returns a VoxelShape that determines:
-     * 1. How the block looks visually (its hitbox outline)
-     * 2. What parts of the block you can collide with
-     * 3. Where you can place other blocks around it
+     * 1. How the block looks visually (its outline when highlighted)
+     * 2. The selection box when players look at it
      * <p>
-     * Our chain block uses a full cube shape (16 pixels on all sides) defined in SHAPE.
-     * The coordinates are in pixels: from (0, 0, 0) to (16, 16, 16), making it a standard full block.
+     * Returns a full block shape (16x16x16 pixels) for both visual appearance
+     * and collision detection.
      *
      * @param state   The current state of the block
      * @param level   The world/level the block is in
      * @param pos     The position of the block
      * @param context Additional context for shape calculation
-     * @return The VoxelShape representing the block's physical bounds
+     * @return The VoxelShape representing the block's full bounds
      */
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
+
 
     /**
      * Tells Minecraft whether this block is capable of emitting redstone signals.
