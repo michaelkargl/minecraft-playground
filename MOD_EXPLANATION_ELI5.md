@@ -783,13 +783,13 @@ public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, Co
 }
 ```
 
-**ELI5:** This tells Minecraft how big the block is. Instead of a full 16x16x16 cube, it's a skinny pole (3 pixels wide).
+**ELI5:** This tells Minecraft how big the block is. It's a full 16x16x16 cube block.
 
 **Technical Details:**
-- `Block.box(x1, y1, z1, x2, y2, z2)` creates a rectangular box
-- Coordinates are in pixels (0-16 scale)
-- `6.5, 0, 6.5` to `9.5, 16, 9.5` = 3x16x3 pixel vertical pole
-- This affects both collision (what you can walk through) and selection box (what you click)
+- `Shapes.block()` creates a standard full cube shape
+- This is the same shape as most vanilla blocks (stone, dirt, etc.)
+- Affects both collision (what you can walk through) and selection box (what you click)
+- Previously this was a thin pole, but has been changed to a full block for better gameplay
 
 ---
 
