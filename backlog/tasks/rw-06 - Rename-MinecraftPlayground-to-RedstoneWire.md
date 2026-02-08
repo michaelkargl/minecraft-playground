@@ -12,7 +12,7 @@ ordinal: 1000
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Artifact is built as redstone-wire
+- [x] #1 Artifact is built as redstone-wire
 - [ ] #2 Repository is named RedstoneWire
 - [x] #3 Game is playable
 - [x] #4 Translations are there
