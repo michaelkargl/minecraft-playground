@@ -1,4 +1,4 @@
-package at.osa.minecraftplayground;
+package at.osa.redstonewire;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;

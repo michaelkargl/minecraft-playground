@@ -1,4 +1,4 @@
-package at.osa.minecraftplayground;
+package at.osa.redstonewire;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -36,16 +36,16 @@ public class RedstoneChainConnector extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {
-            CompoundTag tag = stack.getOrDefault(MinecraftPlayground.LINK_DATA, new CompoundTag());
+            CompoundTag tag = stack.getOrDefault(RedstoneWire.LINK_DATA, new CompoundTag());
             if (tag.contains("LinkX")) {
                 CompoundTag newTag = tag.copy();
                 newTag.remove("LinkX");
                 newTag.remove("LinkY");
                 newTag.remove("LinkZ");
-                stack.set(MinecraftPlayground.LINK_DATA, newTag.isEmpty() ? null : newTag);
+                stack.set(RedstoneWire.LINK_DATA, newTag.isEmpty() ? null : newTag);
 
                 player.displayClientMessage(
-                        Component.translatable("item.minecraftplayground.chain_connector.cleared")
+                        Component.translatable("item.redstone_wire.chain_connector.cleared")
                                 .withStyle(ChatFormatting.YELLOW),
                         true
                 );
@@ -80,7 +80,7 @@ public class RedstoneChainConnector extends Item {
     (Level level, Player player, BlockPos clickedPos,
                                                RedstoneChainEntity chain, ItemStack stack) {
         // Get saved position data from item (if any)
-        CompoundTag savedData = stack.getOrDefault(MinecraftPlayground.LINK_DATA, new CompoundTag());
+        CompoundTag savedData = stack.getOrDefault(RedstoneWire.LINK_DATA, new CompoundTag());
 
         // Check if this is the second click (completing a connection)
         if (hasSavedPosition(savedData)) {
@@ -162,14 +162,14 @@ public class RedstoneChainConnector extends Item {
         tag.putInt("LinkX", pos.getX());
         tag.putInt("LinkY", pos.getY());
         tag.putInt("LinkZ", pos.getZ());
-        stack.set(MinecraftPlayground.LINK_DATA, tag);
+        stack.set(RedstoneWire.LINK_DATA, tag);
     }
 
     /**
      * Clears the saved position from the item.
      */
     private void clearSavedPosition(ItemStack stack) {
-        stack.set(MinecraftPlayground.LINK_DATA, null);
+        stack.set(RedstoneWire.LINK_DATA, null);
     }
 
     /**
@@ -239,7 +239,7 @@ public class RedstoneChainConnector extends Item {
     private void showMaxConnectionsError(Level level, Player player) {
         if (!level.isClientSide) {
             player.displayClientMessage(
-                    Component.translatable("item.minecraftplayground.chain_connector.max_connections")
+                    Component.translatable("item.redstone_wire.chain_connector.max_connections")
                             .withStyle(ChatFormatting.RED),
                     true
             );
@@ -249,7 +249,7 @@ public class RedstoneChainConnector extends Item {
     private void showDistanceError(Player player, double distanceSq) {
         int actualDistance = (int) Math.sqrt(distanceSq);
         player.displayClientMessage(
-                Component.translatable("item.minecraftplayground.chain_connector.too_far",
+                Component.translatable("item.redstone_wire.chain_connector.too_far",
                                 Config.getMaxConnectionDistance(), actualDistance)
                         .withStyle(ChatFormatting.RED),
                 true
@@ -258,7 +258,7 @@ public class RedstoneChainConnector extends Item {
 
     private void showSavedMessage(Player player, BlockPos pos) {
         player.displayClientMessage(
-                Component.translatable("item.minecraftplayground.chain_connector.saved",
+                Component.translatable("item.redstone_wire.chain_connector.saved",
                                 formatBlockPos(pos))
                         .withStyle(ChatFormatting.AQUA),
                 true
@@ -267,7 +267,7 @@ public class RedstoneChainConnector extends Item {
 
     private void showConnectionSuccessMessage(Player player, BlockPos start, BlockPos end, int distance) {
         player.displayClientMessage(
-                Component.translatable("item.minecraftplayground.chain_connector.connected",
+                Component.translatable("item.redstone_wire.chain_connector.connected",
                                 formatBlockPos(start), formatBlockPos(end), distance)
                         .withStyle(ChatFormatting.GREEN),
                 true
@@ -322,16 +322,16 @@ public class RedstoneChainConnector extends Item {
      */
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        CompoundTag tag = stack.getOrDefault(MinecraftPlayground.LINK_DATA, new CompoundTag());
+        CompoundTag tag = stack.getOrDefault(RedstoneWire.LINK_DATA, new CompoundTag());
         if (tag.contains("LinkX")) {
             BlockPos pos = new BlockPos(tag.getInt("LinkX"), tag.getInt("LinkY"), tag.getInt("LinkZ"));
-            tooltip.add(Component.translatable("item.minecraftplayground.chain_connector.saved_point",
+            tooltip.add(Component.translatable("item.redstone_wire.chain_connector.saved_point",
                     pos.toShortString()).withStyle(ChatFormatting.GRAY));
         } else {
-            tooltip.add(Component.translatable("item.minecraftplayground.chain_connector.no_saved_point")
+            tooltip.add(Component.translatable("item.redstone_wire.chain_connector.no_saved_point")
                     .withStyle(ChatFormatting.DARK_GRAY));
         }
-        tooltip.add(Component.translatable("item.minecraftplayground.chain_connector.usage")
+        tooltip.add(Component.translatable("item.redstone_wire.chain_connector.usage")
                 .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

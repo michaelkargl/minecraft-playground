@@ -1,4 +1,4 @@
-package at.osa.minecraftplayground;
+package at.osa.redstonewire;
 
 import java.util.List;
 

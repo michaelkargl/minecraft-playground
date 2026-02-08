@@ -1,6 +1,6 @@
 package tests;
 
-import at.osa.minecraftplayground.MinecraftPlayground;
+import at.osa.redstonewire.RedstoneWire;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.core.BlockPos;
@@ -17,7 +17,7 @@ import static tests.TestHelpers.*;
 // 2. running the dev server
 // 3. connecting via dev client
 // 4. run /test create <classname>.<testname>
-@GameTestHolder("minecraftplayground")
+@GameTestHolder("redstone_wire")
 public class SimpleGameTests {
 
     @GameTest
@@ -94,7 +94,7 @@ public class SimpleGameTests {
         var outputChainBlockPosition = new BlockPos(3, 2, 3);
         var leverPosition = new BlockPos(0, 2, 1);
         var redstoneWirePosition = new BlockPos(4, 2, 3);
-        var connectorItem = new ItemStack(MinecraftPlayground.REDSTONE_CHAIN_CONNECTOR.get());
+        var connectorItem = new ItemStack(RedstoneWire.REDSTONE_CHAIN_CONNECTOR.get());
 
         new SpecFlow(helper)
                 .given("The structure is set up correctly", () -> {

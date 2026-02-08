@@ -86,9 +86,9 @@ NeoForge mods load in phases (similar to .NET application startup):
 
 **Your mod example:**
 ```java
-@Mod(MinecraftPlayground.MODID)
-public class MinecraftPlayground {
-    public MinecraftPlayground(IEventBus modEventBus, ModContainer modContainer) {
+@Mod(RedstoneWire.MODID)
+public class RedstoneWire {
+    public RedstoneWire(IEventBus modEventBus, ModContainer modContainer) {
         // CONSTRUCT phase - register everything
         modEventBus.addListener(this::commonSetup);
         BLOCKS.register(modEventBus);
@@ -616,7 +616,7 @@ It's like creating overhead power lines, but for redstone signals. Super cool fo
 
 **ELI5:** Think of this like a toy instruction manual that came in the box but you haven't opened yet. It's there if you need it later!
 
-**Location:** `src/main/java/at/osa/minecraftplayground/Config.java`
+**Location:** `src/main/java/at/osa/redstone-wire/Config.java`
 
 ---
 
@@ -632,15 +632,15 @@ public boolean isFoil(ItemStack stack) {
 
 **ELI5:** Remember how enchanted diamond swords have that cool shimmering effect? This makes your chain blocks look magical too, so you know they're special!
 
-**Location:** `src/main/java/at/osa/minecraftplayground/RedstoneChainBlockItem.java`
+**Location:** `src/main/java/at/osa/redstone-wire/RedstoneChainBlockItem.java`
 
 ---
 
-### 3. **MinecraftPlayground.java** - The Mod's Brain (Main File)
+### 3. **RedstoneWire.java** - The Mod's Brain (Main File)
 
 **What it does:** This is the "boss" file that tells Minecraft about everything in your mod.
 
-**Location:** `src/main/java/at/osa/minecraftplayground/MinecraftPlayground.java`
+**Location:** `src/main/java/at/osa/redstone-wire/RedstoneWire.java`
 
 #### Key Parts:
 
@@ -670,7 +670,7 @@ public static final DeferredBlock<RedstoneChainBlock> REDSTONE_CHAIN_BLOCK = BLO
 **ELI5:** This creates your special chain block! It's like telling Minecraft "Hey, I invented a new type of block called 'redstone_chain' and here's how to build one."
 
 **Technical Details:**
-- `"redstone_chain"` is the registry name (becomes `minecraftplayground:redstone_chain`)
+- `"redstone_chain"` is the registry name (becomes `redstone-wire:redstone_chain`)
 - The lambda `() -> new RedstoneChainBlock(...)` is a supplier - it tells Minecraft HOW to create the block when needed
 - `BlockBehaviour.Properties.of()` sets up basic block properties (hardness, sound, etc.)
 
@@ -734,19 +734,19 @@ public static final Supplier<DataComponentType<CompoundTag>> LINK_DATA = DATA_CO
 
 ---
 
-### 4. **MinecraftPlaygroundClient.java** - The Graphics Department
+### 4. **RedstoneWireClient.java** - The Graphics Department
 
 **What it does:** This file ONLY runs on the player's computer (not on servers). It tells Minecraft how to draw the cables.
 
-**Location:** `src/main/java/at/osa/minecraftplayground/MinecraftPlaygroundClient.java`
+**Location:** `src/main/java/at/osa/redstone-wire/RedstoneWireClient.java`
 
 ```java
-@Mod(value = MinecraftPlayground.MODID, dist = Dist.CLIENT)
-public class MinecraftPlaygroundClient {
+@Mod(value = RedstoneWire.MODID, dist = Dist.CLIENT)
+public class RedstoneWireClient {
 
     static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(
-            MinecraftPlayground.REDSTONE_CHAIN_ENTITY.get(),
+            RedstoneWire.REDSTONE_CHAIN_ENTITY.get(),
             RedstoneChainRenderer::new
         );
     }
@@ -768,7 +768,7 @@ public class MinecraftPlaygroundClient {
 
 **What it does:** This is the actual chain block that can carry redstone power. It's like redstone wire, but vertical!
 
-**Location:** `src/main/java/at/osa/minecraftplayground/RedstoneChainBlock.java`
+**Location:** `src/main/java/at/osa/redstone-wire/RedstoneChainBlock.java`
 
 #### Key Concepts:
 
@@ -1006,7 +1006,7 @@ public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
 @Override
 public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                 BlockEntityType<T> type) {
-    return type == MinecraftPlayground.REDSTONE_CHAIN_ENTITY.get() ? RedstoneChainEntity::tick : null;
+    return type == RedstoneWire.REDSTONE_CHAIN_ENTITY.get() ? RedstoneChainEntity::tick : null;
 }
 ```
 
@@ -1080,7 +1080,7 @@ public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
 
 **What it does:** This draws the beautiful red cables between chain blocks.
 
-**Location:** `src/main/java/at/osa/minecraftplayground/RedstoneChainRenderer.java`
+**Location:** `src/main/java/at/osa/redstone-wire/RedstoneChainRenderer.java`
 
 #### **The Render Type** (Lines 25-38)
 
@@ -1315,7 +1315,7 @@ This is how we create a coordinate system oriented along the cable direction!
 
 **What it does:** This is the "brain" that remembers connections, builds networks, and distributes power.
 
-**Location:** `src/main/java/at/osa/minecraftplayground/RedstoneChainEntity.java`
+**Location:** `src/main/java/at/osa/redstone-wire/RedstoneChainEntity.java`
 
 This is the most complex file, so let's break it down thoroughly!
 
@@ -1945,7 +1945,7 @@ Client: Draw new cable!
 
 **What it does:** This is the item you use to connect chains together.
 
-**Location:** `src/main/java/at/osa/minecraftplayground/RedstoneChainConnector.java`
+**Location:** `src/main/java/at/osa/redstone-wire/RedstoneChainConnector.java`
 
 ---
 
@@ -1969,16 +1969,16 @@ public InteractionResultHolder<ItemStack> use(Level level, Player player, Intera
 
     if (player.isShiftKeyDown()) {
         if (!level.isClientSide) {
-            CompoundTag tag = stack.getOrDefault(MinecraftPlayground.LINK_DATA, new CompoundTag());
+            CompoundTag tag = stack.getOrDefault(RedstoneWire.LINK_DATA, new CompoundTag());
             if (tag.contains("LinkX")) {
                 CompoundTag newTag = tag.copy();
                 newTag.remove("LinkX");
                 newTag.remove("LinkY");
                 newTag.remove("LinkZ");
-                stack.set(MinecraftPlayground.LINK_DATA, newTag.isEmpty() ? null : newTag);
+                stack.set(RedstoneWire.LINK_DATA, newTag.isEmpty() ? null : newTag);
 
                 player.displayClientMessage(
-                    Component.translatable("item.minecraftplayground.chain_connector.cleared")
+                    Component.translatable("item.redstone-wire.chain_connector.cleared")
                         .withStyle(ChatFormatting.YELLOW),
                     true
                 );
@@ -2006,12 +2006,12 @@ public InteractionResultHolder<ItemStack> use(Level level, Player player, Intera
 ```java
 private InteractionResult handleShiftClick(Level level, Player player, BlockPos clickedPos,
                                            RedstoneChainEntity chain, ItemStack stack) {
-    CompoundTag tag = stack.getOrDefault(MinecraftPlayground.LINK_DATA, new CompoundTag());
+    CompoundTag tag = stack.getOrDefault(RedstoneWire.LINK_DATA, new CompoundTag());
 
     // First check: Does this chain already have max connections?
     if (!level.isClientSide && chain.getConnections().size() >= MAX_CONNECTIONS_PER_CHAIN) {
         player.displayClientMessage(
-            Component.translatable("item.minecraftplayground.chain_connector.max_connections")
+            Component.translatable("item.redstone-wire.chain_connector.max_connections")
                 .withStyle(ChatFormatting.RED),
             true
         );
@@ -2023,7 +2023,7 @@ private InteractionResult handleShiftClick(Level level, Player player, BlockPos 
         BlockPos startPos = new BlockPos(tag.getInt("LinkX"), tag.getInt("LinkY"), tag.getInt("LinkZ"));
 
         // Clear saved position
-        stack.set(MinecraftPlayground.LINK_DATA, null);
+        stack.set(RedstoneWire.LINK_DATA, null);
 
         if (!startPos.equals(clickedPos)) {
             double distanceSq = startPos.distSqr(clickedPos);
@@ -2062,7 +2062,7 @@ private InteractionResult handleShiftClick(Level level, Player player, BlockPos 
             newTag.putInt("LinkX", clickedPos.getX());
             newTag.putInt("LinkY", clickedPos.getY());
             newTag.putInt("LinkZ", clickedPos.getZ());
-            stack.set(MinecraftPlayground.LINK_DATA, newTag);
+            stack.set(RedstoneWire.LINK_DATA, newTag);
 
             player.displayClientMessage(...);
         }
@@ -2100,16 +2100,16 @@ private InteractionResult handleShiftClick(Level level, Player player, BlockPos 
 ```java
 @Override
 public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-    CompoundTag tag = stack.getOrDefault(MinecraftPlayground.LINK_DATA, new CompoundTag());
+    CompoundTag tag = stack.getOrDefault(RedstoneWire.LINK_DATA, new CompoundTag());
     if (tag.contains("LinkX")) {
         BlockPos pos = new BlockPos(tag.getInt("LinkX"), tag.getInt("LinkY"), tag.getInt("LinkZ"));
-        tooltip.add(Component.translatable("item.minecraftplayground.chain_connector.saved_point",
+        tooltip.add(Component.translatable("item.redstone-wire.chain_connector.saved_point",
                 pos.toShortString()).withStyle(ChatFormatting.GRAY));
     } else {
-        tooltip.add(Component.translatable("item.minecraftplayground.chain_connector.no_saved_point")
+        tooltip.add(Component.translatable("item.redstone-wire.chain_connector.no_saved_point")
                 .withStyle(ChatFormatting.DARK_GRAY));
     }
-    tooltip.add(Component.translatable("item.minecraftplayground.chain_connector.usage")
+    tooltip.add(Component.translatable("item.redstone-wire.chain_connector.usage")
             .withStyle(ChatFormatting.DARK_GRAY));
 }
 ```
@@ -2133,7 +2133,7 @@ Redstone Chain Connector
 
 **What Happens:**
 
-1. **MinecraftPlayground.java (Line 64-66):** The DeferredRegister provides the block instance
+1. **RedstoneWire.java (Line 64-66):** The DeferredRegister provides the block instance
 2. **RedstoneChainBlock.java (Line 232-235):** `onPlace()` is called, schedules a tick in 1 game tick
 3. **RedstoneChainBlock.java (Line 396-399):** `newBlockEntity()` creates a `RedstoneChainEntity`
 4. **RedstoneChainEntity.java (Line 75-77):** Constructor initializes the entity
@@ -2303,11 +2303,11 @@ Can't tell when at max connections without trying to add more.
 ## 📊 Complete Class Hierarchy
 
 ```
-MinecraftPlayground (Main Mod Class)
+RedstoneWire (Main Mod Class)
 ├── Registers all content
 └── Listens to mod events
 
-MinecraftPlaygroundClient (Client-Only)
+RedstoneWireClient (Client-Only)
 ├── Registers renderers
 └── Client setup
 

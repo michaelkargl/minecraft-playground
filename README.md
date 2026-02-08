@@ -25,12 +25,12 @@ Configuration
 This mod uses NeoForge's configuration system to provide runtime customization. After running Minecraft with this mod for the first time, a configuration file will be automatically generated.
 
 **Configuration File Location:**
-`config/minecraftplayground-common.toml`
+`config/redstone-wire-common.toml`
 
 ### Editing the Configuration
 
 1. Stop Minecraft if it's running
-2. Open `config/minecraftplayground-common.toml` in any text editor
+2. Open `config/redstone-wire-common.toml` in any text editor
 3. Modify values (validation ranges are enforced)
 4. Save the file
 5. Restart Minecraft for changes to take effect

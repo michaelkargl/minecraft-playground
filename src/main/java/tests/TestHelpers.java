@@ -1,6 +1,6 @@
 package tests;
 
-import at.osa.minecraftplayground.RedstoneChainEntity;
+import at.osa.redstonewire.RedstoneChainEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;

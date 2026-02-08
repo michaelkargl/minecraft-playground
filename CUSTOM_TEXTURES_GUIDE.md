@@ -9,9 +9,9 @@
 
 ✅ **Updated model files** to reference custom textures:
 
-1. **`redstone_chain.json`** - Now references `"minecraftplayground:block/redstone_chain"`
-2. **`redstone_chain_powered.json`** - Now references `"minecraftplayground:block/redstone_chain_powered"`
-3. **Created textures directory** at: `src/main/resources/assets/minecraftplayground/textures/block/`
+1. **`redstone_chain.json`** - Now references `"redstone-wire:block/redstone_chain"`
+2. **`redstone_chain_powered.json`** - Now references `"redstone-wire:block/redstone_chain_powered"`
+3. **Created textures directory** at: `src/main/resources/assets/redstone-wire/textures/block/`
 
 ---
 
@@ -21,7 +21,7 @@
 
 Place your 16x16 PNG texture files here:
 ```
-src/main/resources/assets/minecraftplayground/textures/block/
+src/main/resources/assets/redstone-wire/textures/block/
 ├── redstone_chain.png          ← Unpowered state texture
 └── redstone_chain_powered.png  ← Powered state texture
 ```
@@ -39,7 +39,7 @@ Create this folder structure in your Minecraft resourcepacks folder:
 .minecraft/resourcepacks/RedstoneChainTextures/
 ├── pack.mcmeta
 └── assets/
-    └── minecraftplayground/
+    └── redstone-wire/
         └── textures/
             └── block/
                 ├── redstone_chain.png
@@ -193,7 +193,7 @@ Press **F3 + T** in-game to reload textures without restarting!
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "minecraftplayground:block/redstone_chain"  ← Custom texture
+    "all": "redstone-wire:block/redstone_chain"  ← Custom texture
   }
 }
 
@@ -201,7 +201,7 @@ Press **F3 + T** in-game to reload textures without restarting!
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "minecraftplayground:block/redstone_chain_powered"  ← Custom texture
+    "all": "redstone-wire:block/redstone_chain_powered"  ← Custom texture
   }
 }
 ```
@@ -267,7 +267,7 @@ RedstoneChainTextures/
 │   }
 │
 └── assets/
-    └── minecraftplayground/
+    └── redstone-wire/
         └── textures/
             └── block/
                 ├── redstone_chain.png (16x16)
@@ -289,7 +289,7 @@ Choose your path:
 
 ### Path 2: Final Integration (Built-in)
 1. Create your final textures
-2. Place in `src/main/resources/assets/minecraftplayground/textures/block/`
+2. Place in `src/main/resources/assets/redstone-wire/textures/block/`
 3. Rebuild mod
 4. Test in-game
 

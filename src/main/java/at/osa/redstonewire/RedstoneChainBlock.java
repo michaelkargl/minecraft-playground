@@ -1,4 +1,4 @@
-package at.osa.minecraftplayground;
+package at.osa.redstonewire;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -212,6 +212,7 @@ public class RedstoneChainBlock extends Block implements EntityBlock {
     @Override
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
         if (!level.isClientSide && !(neighborBlock instanceof RedstoneChainBlock)) {
+
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof RedstoneChainEntity chain) {
                 // Use the network update for wire-connected blocks
@@ -453,7 +454,7 @@ public class RedstoneChainBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return type == MinecraftPlayground.REDSTONE_CHAIN_ENTITY.get() ? RedstoneChainEntity::tick : null;
+        return type == RedstoneWire.REDSTONE_CHAIN_ENTITY.get() ? RedstoneChainEntity::tick : null;
     }
 
     /**

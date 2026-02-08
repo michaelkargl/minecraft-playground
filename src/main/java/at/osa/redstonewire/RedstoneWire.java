@@ -1,9 +1,8 @@
-package at.osa.minecraftplayground;
+package at.osa.redstonewire;
 
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Codec;
 
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -38,33 +37,33 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.function.Supplier;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
-@Mod(MinecraftPlayground.MODID)
-public class MinecraftPlayground {
+@Mod(RedstoneWire.MODID)
+public class RedstoneWire {
     // Define mod id in a common place for everything to reference
-    public static final String MODID = "minecraftplayground";
+    public static final String MODID = "redstone_wire";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
-    // Create a Deferred Register to hold Blocks which will all be registered under the "minecraftplayground" namespace
+    // Create a Deferred Register to hold Blocks which will all be registered under the "redstone_wire" namespace
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    // Create a Deferred Register to hold Items which will all be registered under the "minecraftplayground" namespace
+    // Create a Deferred Register to hold Items which will all be registered under the "redstone_wire" namespace
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "minecraftplayground" namespace
+    // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "redstone_wire" namespace
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
-    // Create a Deferred Register to hold BlockEntityTypes which will all be registered under the "minecraftplayground" namespace
+    // Create a Deferred Register to hold BlockEntityTypes which will all be registered under the "redstone_wire" namespace
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
-    // Create a Deferred Register to hold DataComponentTypes which will all be registered under the "minecraftplayground" namespace
+    // Create a Deferred Register to hold DataComponentTypes which will all be registered under the "redstone_wire" namespace
     public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENT_TYPES = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MODID);
 
-    // Creates a new Block with the id "minecraftplayground:example_block", combining the namespace and path
+    // Creates a new Block with the id "redstone_wire:example_block", combining the namespace and path
     public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
-    // Creates a new BlockItem with the id "minecraftplayground:example_block", combining the namespace and path
+    // Creates a new BlockItem with the id "redstone_wire:example_block", combining the namespace and path
     public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
 
-    // Creates a new Redstone Chain Block with the id "minecraftplayground:redstone_chain", combining the namespace and path
+    // Creates a new Redstone Chain Block with the id "redstone_wire:redstone_chain", combining the namespace and path
     public static final DeferredBlock<RedstoneChainBlock> REDSTONE_CHAIN_BLOCK = BLOCKS.register(
             "redstone_chain",
             () -> new RedstoneChainBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
-    // Creates a new BlockItem with the id "minecraftplayground:redstone_chain", combining the namespace and path
+    // Creates a new BlockItem with the id "redstone_wire:redstone_chain", combining the namespace and path
     public static final DeferredItem<RedstoneChainBlockItem> REDSTONE_CHAIN_BLOCK_ITEM = ITEMS.register(
             "redstone_chain",
             () -> new RedstoneChainBlockItem(REDSTONE_CHAIN_BLOCK.get(), new Item.Properties()));
@@ -87,13 +86,13 @@ public class MinecraftPlayground {
                     .networkSynchronized(ByteBufCodecs.COMPOUND_TAG)
                     .build());
 
-    // Creates a new food item with the id "minecraftplayground:example_id", nutrition 1 and saturation 2
+    // Creates a new food item with the id "redstone_wire:example_id", nutrition 1 and saturation 2
     public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item", new Item.Properties().food(new FoodProperties.Builder()
             .alwaysEdible().nutrition(1).saturationModifier(2f).build()));
 
-    // Creates a creative tab with the id "minecraftplayground:example_tab" for the example item, that is placed after the combat tab
+    // Creates a creative tab with the id "redstone_wire:example_tab" for the example item, that is placed after the combat tab
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.minecraftplayground")) //The language key for the title of your CreativeModeTab
+            .title(Component.translatable("itemGroup.redstone_wire")) //The language key for the title of your CreativeModeTab
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> EXAMPLE_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
@@ -104,7 +103,7 @@ public class MinecraftPlayground {
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
-    public MinecraftPlayground(IEventBus modEventBus, ModContainer modContainer) {
+    public RedstoneWire(IEventBus modEventBus, ModContainer modContainer) {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
@@ -120,7 +119,7 @@ public class MinecraftPlayground {
         DATA_COMPONENT_TYPES.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in.
-        // Note that this is necessary if and only if we want *this* class (MinecraftPlayground) to respond directly to events.
+        // Note that this is necessary if and only if we want *this* class (RedstoneWire) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
 

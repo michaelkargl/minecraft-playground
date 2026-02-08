@@ -54,8 +54,8 @@ This will:
 ## Test Structure Templates
 
 The tests use empty structure templates located in:
-- `src/main/resources/data/minecraftplayground/structures/empty3x3x3.nbt`
-- `src/main/resources/data/minecraftplayground/structures/empty5x5x5.nbt`
+- `src/main/resources/data/redstone-wire/structures/empty3x3x3.nbt`
+- `src/main/resources/data/redstone-wire/structures/empty5x5x5.nbt`
 
 These templates provide empty test arenas where blocks can be placed programmatically during test execution.
 

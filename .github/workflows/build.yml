@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: minecraftplayground-${{ github.ref_name }}-${{ github.sha }}
+          name: redstone-wire-${{ github.ref_name }}-${{ github.sha }}
           path: build/libs/*.jar
           retention-days: 30
 

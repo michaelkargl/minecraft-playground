@@ -8,7 +8,7 @@
 RedstoneChainTextures/
 ├── pack.mcmeta
 └── assets/
-    └── minecraftplayground/
+    └── redstone-wire/
         └── textures/
             └── block/
                 ├── redstone_chain.png
@@ -36,7 +36,7 @@ Save this as `pack.mcmeta` in the `RedstoneChainTextures` folder:
 
 Place your 16x16 PNG files in:
 ```
-RedstoneChainTextures/assets/minecraftplayground/textures/block/
+RedstoneChainTextures/assets/redstone-wire/textures/block/
 ```
 
 **Files needed:**

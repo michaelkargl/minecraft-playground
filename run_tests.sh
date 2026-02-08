@@ -32,7 +32,7 @@ print_error() {
 # Print header
 echo ""
 echo "========================================="
-echo "  Minecraft Playground - Game Test Runner"
+echo "  Redstone Wire - Game Test Runner"
 echo "========================================="
 echo ""
 

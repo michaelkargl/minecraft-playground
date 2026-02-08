@@ -1,4 +1,4 @@
-package at.osa.minecraftplayground;
+package at.osa.redstonewire;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 
 import java.util.*;
 
@@ -87,7 +86,7 @@ public class RedstoneChainEntity extends BlockEntity {
      * @param state The block state of the RedstoneChainBlock
      */
     public RedstoneChainEntity(BlockPos pos, BlockState state) {
-        super(MinecraftPlayground.REDSTONE_CHAIN_ENTITY.get(), pos, state);
+        super(RedstoneWire.REDSTONE_CHAIN_ENTITY.get(), pos, state);
     }
 
     /**

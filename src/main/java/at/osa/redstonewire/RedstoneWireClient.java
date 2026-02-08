@@ -1,4 +1,4 @@
-package at.osa.minecraftplayground;
+package at.osa.redstonewire;
 
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -11,13 +11,13 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
-@Mod(value = MinecraftPlayground.MODID, dist = Dist.CLIENT)
-public class MinecraftPlaygroundClient {
+@Mod(value = RedstoneWire.MODID, dist = Dist.CLIENT)
+public class RedstoneWireClient {
 
-    public MinecraftPlaygroundClient(IEventBus modEventBus, ModContainer container) {
+    public RedstoneWireClient(IEventBus modEventBus, ModContainer container) {
         // Register mod bus events manually
-        modEventBus.addListener(MinecraftPlaygroundClient::onClientSetup);
-        modEventBus.addListener(MinecraftPlaygroundClient::registerRenderers);
+        modEventBus.addListener(RedstoneWireClient::onClientSetup);
+        modEventBus.addListener(RedstoneWireClient::registerRenderers);
 
         // Allows NeoForge to create a config screen for this mod's configs.
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
@@ -27,12 +27,12 @@ public class MinecraftPlaygroundClient {
 
     static void onClientSetup(FMLClientSetupEvent event) {
         // Some client setup code
-        MinecraftPlayground.LOGGER.info("HELLO FROM CLIENT SETUP");
-        MinecraftPlayground.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+        RedstoneWire.LOGGER.info("HELLO FROM CLIENT SETUP");
+        RedstoneWire.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
     }
 
     static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         // Register the block entity renderer for redstone chains
-        event.registerBlockEntityRenderer(MinecraftPlayground.REDSTONE_CHAIN_ENTITY.get(), RedstoneChainRenderer::new);
+        event.registerBlockEntityRenderer(RedstoneWire.REDSTONE_CHAIN_ENTITY.get(), RedstoneChainRenderer::new);
     }
 }
